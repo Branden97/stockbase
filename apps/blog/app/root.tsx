@@ -7,7 +7,6 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react"
-import { Analytics } from "@vercel/analytics/react"
 import styles from "./styles.css"
 
 export const meta: MetaFunction = () => [
@@ -32,7 +31,6 @@ export default function App(): JSX.Element {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <Analytics />
       </body>
     </html>
   )
