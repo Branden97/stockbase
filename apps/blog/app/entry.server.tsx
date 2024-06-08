@@ -1,6 +1,6 @@
-import handleRequest from "@vercel/remix-entry-server";
-import { RemixServer } from "@remix-run/react";
-import type { EntryContext } from "@remix-run/server-runtime";
+import handleRequest from '@vercel/remix-entry-server'
+import { RemixServer } from '@remix-run/react'
+import type { EntryContext } from '@remix-run/server-runtime'
 
 export default function entry(
   request: Request,
@@ -8,11 +8,11 @@ export default function entry(
   responseHeaders: Headers,
   remixContext: EntryContext
 ): Promise<unknown> {
-  const remixServer = <RemixServer context={remixContext} url={request.url} />;
+  const remixServer = <RemixServer context={remixContext} url={request.url} />
   return handleRequest(
     request,
     responseStatusCode,
     responseHeaders,
     remixServer
-  );
+  )
 }
