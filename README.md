@@ -2,6 +2,14 @@
 
 A real-time stock market dashboard built with Node.js, React.js, and SQL. Created as a take-home assignment for Truckbase, it features real-time stock updates, watchlist management, and robust error handling.
 
+## Installation Instructions
+
+TODO: add installation / dev setup instructions...
+
+> [!NOTE]
+> If you're getting a `Cannot find module '@repo/ui'` (or similar) error in vscode, run `pnpm run dev`. It will generate the `dist/**/*.d.ts` type files, which fixed the issue for me. [[more info]](https://github.com/vercel/turbo/issues/4771)
+
+
 <details>
   <summary><h2>Features Checklist</h2></summary>
   
@@ -11,11 +19,11 @@ Legend:
 - 🟦 Added by me
 #### Backend (Node.js)
 - [ ] 🟩 RESTful API
-    - [x] 🟦 design API schema
-    - [x] 🟦 design API security / auth model
+    - [x] ~~🟦 design API schema~~
+    - [x] ~~🟦 design API security / auth model~~
     - [ ] 🟩 fetch current stock prices
     - [ ] 🟩 add new stocks to watchlist (must be SQL DB)
-        - [x] 🟩 design the schema
+        - [x] ~~🟩 design the schema~~
     - [ ] 🟩 Real-Time data streaming of stock price updates
 - [ ] 🟩 SQL DB
     - [ ] 🟩 Database Schema: Write a SQL query to create the necessary table(s) for the watchlist
