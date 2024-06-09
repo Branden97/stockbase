@@ -3,9 +3,8 @@
 A real-time stock market dashboard built with Node.js, React.js, and SQL. Created as a take-home assignment for Truckbase, it features real-time stock updates, watchlist management, and robust error handling.
 
 <details>
-  <summary>Features Checklist</summary>
+  <summary><h2>Features Checklist</h2></summary>
   
-## Features Checklist
 ### Required Features
 #### Backend (Node.js)
 - [ ] RESTful API
