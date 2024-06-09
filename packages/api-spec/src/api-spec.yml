@@ -16,6 +16,8 @@ servers:
     description: 'Production Server'
   - url: 'https://localhost:5001/api/v0'
     description: 'Development Server'
+  - url: 'http://localhost:5001/api/v0'
+    description: 'Development Server'
 
 tags:
   - name: auth
