@@ -11,6 +11,12 @@ info:
     name: UNLICENSED
     url: https://stockbase.xyz/terms
 
+servers:
+  - url: 'https://stockbase.xyz/api/v0'
+    description: 'Production Server'
+  - url: 'https://localhost:5001/api/v0'
+    description: 'Development Server'
+
 tags:
   - name: auth
     x-displayName: Authentication
@@ -114,6 +120,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found
+
+    patch:
+      tags:
+        - users
+      summary: Update user
+      description: Updates the details of a specific user.
+      operationId: updateUser
+      x-eov-operation-handler: users/updateUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found
+
+    delete:
+      tags:
+        - users
+      summary: Delete user
+      description: Deletes a specific user.
+      operationId: deleteUser
+      x-eov-operation-handler: users/deleteUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to delete.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted successfully
         '403':
           description: Unauthorized
         '404':
@@ -281,6 +342,38 @@ paths:
         '404':
           description: Watchlist not found
 
+    patch:
+      tags:
+        - watchlists
+      summary: Update watchlist
+      description: Updates the details of a specific watchlist.
+      operationId: updateWatchlist
+      x-eov-operation-handler: watchlists/updateWatchlist
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWatchlistRequest'
+      responses:
+        '200':
+          description: Watchlist updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Watchlist'
+        '404':
+          description: Watchlist not found
+
   /watchlists/{watchlistId}/stocks:
     post:
       tags:
@@ -341,6 +434,35 @@ paths:
                   $ref: '#/components/schemas/WatchlistStock'
         '404':
           description: Watchlist not found
+  
+  /watchlists/{watchlistId}/stocks/{stockId}:
+    delete:
+      tags:
+        - watchlists
+      summary: Remove stock from watchlist
+      description: Removes a stock from a specific watchlist.
+      operationId: removeStockFromWatchlist
+      x-eov-operation-handler: watchlists/removeStockFromWatchlist
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to remove the stock from.
+          schema:
+            type: integer
+        - name: stockId
+          in: path
+          required: true
+          description: The ID of the stock to remove.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Stock removed from watchlist successfully
+        '404':
+          description: Watchlist or stock not found
 
 components:
   securitySchemes:
@@ -397,6 +519,17 @@ components:
           type: string
           format: date-time
 
+    UpdateUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+      required:
+        - username
+        - email
+    
     Stock:
       type: object
       properties:
@@ -480,3 +613,11 @@ components:
           type: integer
       required:
         - stock_id
+
+    UpdateWatchlistRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
