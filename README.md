@@ -10,7 +10,7 @@ TODO: add installation / dev setup instructions...
 > If you're getting a `Cannot find module '@repo/ui'` (or similar) error in vscode, run `pnpm run dev`. It will generate the `dist/**/*.d.ts` type files, which fixed the issue for me. [[more info]](https://github.com/vercel/turbo/issues/4771)
 
 
-<details>
+<details open>
   <summary><h2>Features Checklist</h2></summary>
   
 ### Required Features
