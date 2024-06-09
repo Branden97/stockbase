@@ -1,3 +1,4 @@
+import { Button } from '@mui/material'
 import { useState } from 'react'
 
 export function CounterButton(): JSX.Element {
@@ -25,23 +26,14 @@ export function CounterButton(): JSX.Element {
         </code>
       </p>
       <div>
-        <button
+        <Button
           onClick={() => {
             setCount((c) => c + 1)
           }}
-          style={{
-            background: 'black',
-            color: 'white',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '0.25rem',
-            display: 'inline-block',
-            cursor: 'pointer',
-          }}
-          type="button"
+          variant="contained"
         >
           Count: {count}
-        </button>
+        </Button>
       </div>
     </div>
   )
