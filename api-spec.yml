@@ -1,0 +1,482 @@
+openapi: 3.0.0
+info:
+  title: Stockbase API
+  description: API for managing stock watchlists and fetching stock prices.
+  version: 0.0.1
+  contact:
+    name: Support
+    email: support@stockbase.xyz
+    url: https://stockbase.xyz/support
+  license:
+    name: UNLICENSED
+    url: https://stockbase.xyz/terms
+
+tags:
+  - name: auth
+    x-displayName: Authentication
+    description: Endpoints related to user authentication.
+  - name: stocks
+    x-displayName: Stocks
+    description: Endpoints related to stock information and prices.
+  - name: users
+    x-displayName: Users
+    description: Endpoints related to user information.
+  - name: watchlists
+    x-displayName: Watchlists
+    description: Endpoints related to managing user watchlists.
+
+paths:
+  /signup:
+    post:
+      tags:
+        - auth
+      summary: User signup
+      description: Creates a new user account.
+      operationId: signup
+      x-eov-operation-handler: auth/signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+        '409':
+          description: User already exists
+
+  /login:
+    post:
+      tags:
+        - auth
+      summary: User login
+      description: Authenticates a user and returns a JWT token.
+      operationId: login
+      x-eov-operation-handler: auth/login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+
+  /logoutAll:
+    post:
+      tags:
+        - auth
+      summary: Logout all devices
+      description: Logs out the user from all devices by invalidating all active tokens.
+      operationId: logoutAll
+      x-eov-operation-handler: auth/logoutAll
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Logged out from all devices successfully
+        '401':
+          description: Unauthorized
+
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Get user details
+      description: Retrieves the details of a specific user.
+      operationId: getUser
+      x-eov-operation-handler: users/getUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found
+
+  /stocks:
+    get:
+      tags:
+        - stocks
+      summary: List all stocks
+      description: Retrieves a list of all stocks.
+      operationId: listStocks
+      x-eov-operation-handler: stocks/listStocks
+      responses:
+        '200':
+          description: List of stocks retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stock'
+
+  /stocks/{stockId}:
+    get:
+      tags:
+        - stocks
+      summary: Get stock details
+      description: Retrieves the details of a specific stock.
+      operationId: getStock
+      x-eov-operation-handler: stocks/getStock
+      parameters:
+        - name: stockId
+          in: path
+          required: true
+          description: The ID of the stock to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stock details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stock'
+        '404':
+          description: Stock not found
+
+  /stocks/{stockId}/prices:
+    get:
+      tags:
+        - stocks
+      summary: Get stock price history
+      description: Retrieves the price history of a specific stock.
+      operationId: getStockPrices
+      x-eov-operation-handler: stocks/getStockPrices
+      parameters:
+        - name: stockId
+          in: path
+          required: true
+          description: The ID of the stock to retrieve price history for.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stock price history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StockPrice'
+        '404':
+          description: Stock not found
+
+  /watchlists:
+    get:
+      tags:
+        - watchlists
+      summary: List all watchlists
+      description: Retrieves a list of all watchlists for the authenticated user.
+      operationId: listWatchlists
+      x-eov-operation-handler: watchlists/listWatchlists
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of watchlists retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Watchlist'
+
+    post:
+      tags:
+        - watchlists
+      summary: Create a new watchlist
+      description: Creates a new watchlist for the authenticated user.
+      operationId: createWatchlist
+      x-eov-operation-handler: watchlists/createWatchlist
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWatchlistRequest'
+      responses:
+        '201':
+          description: Watchlist created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Watchlist'
+
+  /watchlists/{watchlistId}:
+    get:
+      tags:
+        - watchlists
+      summary: Get watchlist details
+      description: Retrieves the details of a specific watchlist.
+      operationId: getWatchlist
+      x-eov-operation-handler: watchlists/getWatchlist
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Watchlist details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Watchlist'
+        '404':
+          description: Watchlist not found
+
+    delete:
+      tags:
+        - watchlists
+      summary: Delete watchlist
+      description: Deletes a specific watchlist.
+      operationId: deleteWatchlist
+      x-eov-operation-handler: watchlists/deleteWatchlist
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to delete.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Watchlist deleted successfully
+        '404':
+          description: Watchlist not found
+
+  /watchlists/{watchlistId}/stocks:
+    post:
+      tags:
+        - watchlists
+      summary: Add stock to watchlist
+      description: Adds a stock to a specific watchlist.
+      operationId: addStockToWatchlist
+      x-eov-operation-handler: watchlists/addStockToWatchlist
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to add the stock to.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddStockToWatchlistRequest'
+      responses:
+        '201':
+          description: Stock added to watchlist successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchlistStock'
+        '404':
+          description: Watchlist or stock not found
+
+    get:
+      tags:
+        - watchlists
+      summary: List stocks in watchlist
+      description: Retrieves the stocks in a specific watchlist.
+      operationId: listStocksInWatchlist
+      x-eov-operation-handler: watchlists/listStocksInWatchlist
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to retrieve stocks from.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of stocks in watchlist retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WatchlistStock'
+        '404':
+          description: Watchlist not found
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    SignupRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - email
+        - password
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Stock:
+      type: object
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        company_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    StockPrice:
+      type: object
+      properties:
+        id:
+          type: integer
+        stock_id:
+          type: integer
+        price:
+          type: number
+          format: float
+        recorded_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Watchlist:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        user_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateWatchlistRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
+    WatchlistStock:
+      type: object
+      properties:
+        id:
+          type: integer
+        watchlist_id:
+          type: integer
+        stock_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AddStockToWatchlistRequest:
+      type: object
+      properties:
+        stock_id:
+          type: integer
+      required:
+        - stock_id
