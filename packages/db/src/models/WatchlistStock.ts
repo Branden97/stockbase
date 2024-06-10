@@ -14,7 +14,7 @@ import { Watchlist } from './Watchlist'
 import { Stock } from './Stock'
 
 @Table({
-  tableName: 'watchlist_stocks',
+  tableName: 'watchlistStocks',
   timestamps: true,
 })
 export class WatchlistStock extends Model<

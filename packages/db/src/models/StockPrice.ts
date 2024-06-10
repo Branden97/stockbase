@@ -13,7 +13,7 @@ import {
 import { Stock } from './Stock'
 
 @Table({
-  tableName: 'stock_prices',
+  tableName: 'stockPrices',
   timestamps: true,
 })
 export class StockPrice extends Model<

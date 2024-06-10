@@ -12,7 +12,10 @@
     "dev": "tsup --watch",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "new-migration-file": "touch src/migrations/$(date +%Y%m%d%H%M)-new-db-migration.ts",
+    "migrate:up": "ts-node --compilerOptions '{\"strict\": false, \"module\": \"CommonJS\"}' -P ./tsconfig.json scripts/migrate-up.ts",
+    "migrate:down": "ts-node --compilerOptions '{\"strict\": false, \"module\": \"CommonJS\"}' -P ./tsconfig.json scripts/migrate-down.ts"
   },
   "jest": {
     "preset": "@repo/jest-presets/node"
@@ -33,6 +36,7 @@
     "dotenv": "^16.4.5",
     "pg": "^8.12.0",
     "pg-hstore": "^2.3.4",
+    "umzug": "^3.8.1",
     "yup": "^1.4.0"
   }
 }
