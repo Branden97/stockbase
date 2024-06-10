@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { json, urlencoded } from 'body-parser'
-import express, {type Express} from 'express'
+import express, { type Express } from 'express'
+import asyncify from 'express-asyncify'
 import morgan from 'morgan'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -9,6 +10,7 @@ import swaggerUI from 'swagger-ui-express'
 import schema from '@repo/api-spec'
 import * as OpenApiValidator from 'express-openapi-validator'
 import { log } from '@repo/logger'
+import { connectToDatabase, User } from '@repo/db'
 import {
   addStockToWatchlistHandler,
   createWatchlistHandler,
@@ -28,6 +30,8 @@ import {
   updateUserHandler,
   updateWatchlistHandler,
 } from './operation-handlers'
+import { errorHandler } from './error-handler'
+import { handleTestingEndpointRequest } from './testing-endpoint'
 
 export const createServer = (): Express => {
   const app = express()
@@ -40,6 +44,7 @@ export const createServer = (): Express => {
     .get('/status', (_, res) => {
       return res.json({ ok: true })
     })
+    .get('/testing', handleTestingEndpointRequest)
     // req.protocol will be based on the X-Forwarded-Proto header now
     .enable('trust proxy')
     .use(cookieParser())
@@ -49,8 +54,7 @@ export const createServer = (): Express => {
         enabled: (req, res) => {
           return (
             process.env['NODE_ENV'] === 'development' ||
-            ('debug_server_timing' in req.cookies &&
-              req.cookies.debug_server_timing !== '0')
+            ('debug_server_timing' in req.cookies && req.cookies.debug_server_timing !== '0')
           )
         },
       })
@@ -62,8 +66,6 @@ export const createServer = (): Express => {
         apiSpec: schema,
         validateRequests: true, // (default)
         validateResponses: true, // false by default
-        // operationHandlers: path.resolve(__dirname, 'operation-handlers')
-        // operationHandlers: false
       })
     )
     // Manually set up routes with imported handlers 'cause setting up dynamic imports for OpenApiValidator is a headache
@@ -83,27 +85,20 @@ export const createServer = (): Express => {
     .delete('/api/v0/watchlists/:watchlistId', deleteWatchlistHandler)
     .post('/api/v0/watchlists/:watchlistId/stocks', addStockToWatchlistHandler)
     .get('/api/v0/watchlists/:watchlistId/stocks', listStocksInWatchlistHandler)
-    .delete(
-      '/api/v0/watchlists/:watchlistId/stocks/:stockId',
-      removeStockFromWatchlistHandler
-    )
+    .delete('/api/v0/watchlists/:watchlistId/stocks/:stockId', removeStockFromWatchlistHandler)
+    .use(errorHandler)
 
-    // @ts-ignore
-    .use((err, req, res, next) => {
-      // format error
-      res.status(err.status || 500).json({
-        errors: err.errors,
-      })
-    })
   // Log all routes
   // log(
   //   app._router.stack.map((layer) => `${layer.name}: ${layer.regexp}`)
   // )
 
+  // Connect to the database
+  ;(async (expressApp: Express) => {
+    expressApp.db = await connectToDatabase()
+  })(app).catch((error) => {
+    log('Error connecting to database:', error)
+  })
+
   return app
 }
-
-// import * as operationHandlers from './operation-handlers'
-
-// type OperationHandlerKey = keyof typeof operationHandlers
-// type OperationHandler = (typeof operationHandlers)[OperationHandlerKey]
