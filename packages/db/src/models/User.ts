@@ -12,7 +12,9 @@ import {
   AutoIncrement,
   Unique,
   NotNull,
+  HasMany,
 } from '@sequelize/core/decorators-legacy'
+import { Watchlist } from './Watchlist'
 
 @Table({
   tableName: 'users',
@@ -39,4 +41,8 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   @NotNull
   @Attribute(DataTypes.STRING(255))
   declare passwordHash: string
+
+  // has many watchlists
+  @HasMany(() => Watchlist, 'userId')
+  declare watchlists: Watchlist[]
 }

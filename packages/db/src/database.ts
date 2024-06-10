@@ -8,10 +8,7 @@ import {
 import { Attribute } from '@sequelize/core/decorators-legacy'
 import { PostgresDialect } from '@sequelize/postgres'
 import { loadDbConfig } from './config'
-import {
-  User,
-  // Stock, Watchlist, WatchlistStock, StockPrice
-} from './models'
+import { User, Stock, Watchlist, WatchlistStock, StockPrice } from './models'
 
 const config = loadDbConfig()
 
@@ -26,10 +23,7 @@ export async function connectToDatabase(): Promise<Sequelize> {
     ssl: config.POSTGRES_SSL,
     dialectOptions: { clientMinMessages: config.POSTGRES_CLIENT_MIN_MESSAGES },
     schema: config.POSTGRES_SCHEMA,
-    models: [
-      User,
-      // Stock, Watchlist, WatchlistStock, StockPrice
-    ],
+    models: [User, Stock, Watchlist, WatchlistStock, StockPrice],
   })
   // Sync all defined models to the DB if `POSTGRES_INITIALIZE_TABLES` is set to true
   if (process.env.NODE_ENV === 'development' && config.POSTGRES_INITIALIZE_TABLES) {

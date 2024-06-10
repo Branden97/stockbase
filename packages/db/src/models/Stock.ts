@@ -7,7 +7,10 @@ import {
   PrimaryKey,
   AutoIncrement,
   Unique,
+  HasMany,
 } from '@sequelize/core/decorators-legacy'
+import { WatchlistStock } from './WatchlistStock'
+import { StockPrice } from './StockPrice'
 
 @Table({
   tableName: 'stocks',
@@ -24,13 +27,14 @@ export class Stock extends Model<InferAttributes<Stock>, InferCreationAttributes
   declare symbol: string
 
   @Attribute(DataTypes.STRING(255))
-  declare company_name: string
+  declare companyName: string
 
-  @CreatedAt
-  @Attribute(DataTypes.DATE)
-  declare created_at: Date
+  // has many watchlistStocks
+  @HasMany(() => WatchlistStock, { foreignKey: 'stockId', inverse: 'stock' })
+  declare watchlistStocks: WatchlistStock[]
 
-  @UpdatedAt
-  @Attribute(DataTypes.DATE)
-  declare updated_at: Date
+  // has many stockPrices
+  @HasMany(() => StockPrice, { foreignKey: 'stockId', inverse: 'stock' })
+  declare stockPrices: StockPrice[]
+
 }

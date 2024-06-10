@@ -7,8 +7,8 @@ import {
   UpdatedAt,
   PrimaryKey,
   AutoIncrement,
-  ForeignKey,
   BelongsTo,
+  NotNull,
 } from '@sequelize/core/decorators-legacy'
 import { Watchlist } from './Watchlist'
 import { Stock } from './Stock'
@@ -25,26 +25,21 @@ export class WatchlistStock extends Model<
   @AutoIncrement
   @Attribute(DataTypes.INTEGER)
   declare id: number
-
-  @ForeignKey(() => Watchlist)
+ 
+  // @BelongsTo(() => Watchlist, { foreignKey: 'watchlistId' })
+  // @Attribute(DataTypes.INTEGER)
+  // declare watchlist: Watchlist
+  
   @Attribute(DataTypes.INTEGER)
-  declare watchlist_id: number
+  @NotNull
+  declare watchlistId: number
 
-  @ForeignKey(() => Stock)
+  // @BelongsTo(() => Stock, { foreignKey: 'stockId' })
+  // @Attribute(DataTypes.INTEGER)
+  // declare stock: Stock
+  
   @Attribute(DataTypes.INTEGER)
-  declare stock_id: number
+  @NotNull
+  declare stockId: number
 
-  @BelongsTo(() => Watchlist)
-  watchlist: Watchlist
-
-  @BelongsTo(() => Stock)
-  stock: Stock
-
-  @CreatedAt
-  @Attribute(DataTypes.DATE)
-  declare created_at: Date
-
-  @UpdatedAt
-  @Attribute(DataTypes.DATE)
-  declare updated_at: Date
 }

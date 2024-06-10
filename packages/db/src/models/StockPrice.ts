@@ -7,8 +7,8 @@ import {
   UpdatedAt,
   PrimaryKey,
   AutoIncrement,
-  ForeignKey,
   BelongsTo,
+  NotNull,
 } from '@sequelize/core/decorators-legacy'
 import { Stock } from './Stock'
 
@@ -25,24 +25,16 @@ export class StockPrice extends Model<
   @Attribute(DataTypes.INTEGER)
   declare id: number
 
-  @ForeignKey(() => Stock)
+  @NotNull
   @Attribute(DataTypes.INTEGER)
-  declare stock_id: number
+  declare stockId: number
 
   @Attribute(DataTypes.DECIMAL(10, 2))
   declare price: number
 
   @Attribute(DataTypes.DATE)
-  declare recorded_at: Date
+  declare recordedAt: Date
 
-  @BelongsTo(() => Stock)
-  stock: Stock
-
-  @CreatedAt
-  @Attribute(DataTypes.DATE)
-  declare created_at: Date
-
-  @UpdatedAt
-  @Attribute(DataTypes.DATE)
-  declare updated_at: Date
+  // @BelongsTo(() => Stock)
+  // stock: Stock
 }

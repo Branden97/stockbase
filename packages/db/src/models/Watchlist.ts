@@ -7,8 +7,11 @@ import {
   PrimaryKey,
   AutoIncrement,
   BelongsTo,
+  HasMany,
+  NotNull,
 } from '@sequelize/core/decorators-legacy'
 import { User } from './User'
+import { WatchlistStock } from './WatchlistStock'
 
 @Table({
   tableName: 'watchlists',
@@ -26,18 +29,16 @@ export class Watchlist extends Model<
   @Attribute(DataTypes.STRING(100))
   declare name: string
 
-  @ForeignKey(() => User)
+  // belongs to user
+  @BelongsTo(() => User, { foreignKey: 'userId' })
+  declare user: User
+
+  // This is the foreign key
   @Attribute(DataTypes.INTEGER)
-  declare user_id: number
+  @NotNull
+  declare userId: number;
 
-  @BelongsTo(() => User)
-  user: User
-
-  @CreatedAt
-  @Attribute(DataTypes.DATE)
-  declare created_at: Date
-
-  @UpdatedAt
-  @Attribute(DataTypes.DATE)
-  declare updated_at: Date
+  // has many watchlistStocks
+  @HasMany(() => WatchlistStock, { foreignKey: 'watchlistId', inverse: 'watchlist' })
+  declare watchlistStocks: WatchlistStock[]
 }
