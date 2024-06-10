@@ -1,6 +1,6 @@
-import { Request, Response } from 'express'
+import { RequestHandler } from 'express'
 
-export const listStocksHandler = (req: Request, res: Response) => {
+export const listStocksHandler: RequestHandler = (req, res) => {
   res.json([
     {
       id: 1,
@@ -22,6 +22,6 @@ export const listStocksHandler = (req: Request, res: Response) => {
       company_name: 'Microsoft Corporation',
       created_at: '2023-01-01T00:00:00Z',
       updated_at: '2023-01-01T00:00:00Z',
-    }
+    },
   ])
 }

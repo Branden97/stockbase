@@ -108,6 +108,8 @@ paths:
       description: Retrieves the details of a specific user.
       operationId: getUser
       x-eov-operation-handler: users/getUser
+      security:
+        - BearerAuth: []
       parameters:
         - name: userId
           in: path
@@ -135,6 +137,8 @@ paths:
       description: Updates the details of a specific user.
       operationId: updateUser
       x-eov-operation-handler: users/updateUser
+      security:
+        - BearerAuth: []
       parameters:
         - name: userId
           in: path
@@ -167,6 +171,8 @@ paths:
       description: Deletes a specific user.
       operationId: deleteUser
       x-eov-operation-handler: users/deleteUser
+      security:
+        - BearerAuth: []
       parameters:
         - name: userId
           in: path

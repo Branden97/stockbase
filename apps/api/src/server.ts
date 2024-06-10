@@ -1,7 +1,6 @@
-import http, { type Server } from 'node:http'
 import path from 'node:path'
 import { json, urlencoded } from 'body-parser'
-import express from 'express'
+import express, {type Express} from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -30,7 +29,7 @@ import {
   updateWatchlistHandler,
 } from './operation-handlers'
 
-export const createServer = (): Server => {
+export const createServer = (): Express => {
   const app = express()
   app
     .disable('x-powered-by')
@@ -101,7 +100,7 @@ export const createServer = (): Server => {
   //   app._router.stack.map((layer) => `${layer.name}: ${layer.regexp}`)
   // )
 
-  return http.createServer(app)
+  return app
 }
 
 // import * as operationHandlers from './operation-handlers'

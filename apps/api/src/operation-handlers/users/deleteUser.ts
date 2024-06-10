@@ -1,8 +1,5 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express'
 
-export const deleteUserHandler = (req: Request, res: Response) => {
-  res.json({
-    message: "This is a stub response for the users/deleteUser operation.",
-    exampleData: {}
-  });
-};
+export const deleteUserHandler: RequestHandler = (req, res) => {
+  res.status(204).json()
+}

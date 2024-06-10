@@ -1,22 +1,254 @@
 import supertest from 'supertest'
 import { createServer } from '../server'
 
+const apiPrefix = '/api/v0'
+const VALID_TOKEN = 'asdf'
+
 describe('Server', () => {
-  it('health check returns 200', async () => {
-    await supertest(createServer())
-      .get('/status')
-      .expect(200)
-      .then((res) => {
-        expect(res.ok).toBe(true)
-      })
+  const app = createServer()
+
+  describe('Health Check', () => {
+    it('returns 200', async () => {
+      await supertest(app)
+        .get('/status')
+        .expect(200)
+        .then((res) => {
+          expect(res.ok).toBe(true)
+        })
+    })
   })
 
-  it('message endpoint says hello', async () => {
-    await supertest(createServer())
-      .get('/message/jared')
-      .expect(200)
-      .then((res) => {
-        expect(res.body).toEqual({ message: 'hello jared' })
-      })
+  describe('User Operations', () => {
+    it('signup returns 201', async () => {
+      await supertest(app)
+        .post(`${apiPrefix}/signup`)
+        .send({
+          username: 'testuser',
+          email: 'test@example.com',
+          password: 'password123',
+        })
+        .expect(201)
+        .then((res) => {
+          expect(res.body).toHaveProperty('id')
+          expect(res.body).toHaveProperty('username', 'testuser')
+        })
+    })
+
+    it('login returns 200', async () => {
+      await supertest(app)
+        .post(`${apiPrefix}/login`)
+        .send({ email: 'test@example.com', password: 'password123' })
+        .expect(200)
+        .then((res) => {
+          expect(res.body).toHaveProperty('token')
+        })
+    })
+
+    it('logoutAll returns 204', async () => {
+      await supertest(app)
+        .post(`${apiPrefix}/logoutAll`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .expect(204)
+    })
+
+    it('logoutAll returns 401 when unauthorized', async () => {
+      await supertest(app).post(`${apiPrefix}/logoutAll`).expect(401)
+    })
+
+    it('getUser returns 200', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/users/1`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .expect(200)
+        .then((res) => {
+          expect(res.body).toHaveProperty('id', 1)
+        })
+    })
+
+    it('getUser returns 401 when unauthorized', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/users/1`)
+        .expect(401)
+    })
+
+    it('updateUser returns 200', async () => {
+      await supertest(app)
+        .patch(`${apiPrefix}/users/1`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .send({ username: 'updatedUser', email: 'updated@example.com' })
+        .expect(200)
+        .then((res) => {
+          expect(res.body).toHaveProperty('username', 'updatedUser')
+        })
+    })
+
+    it('updateUser returns 401 when unauthorized', async () => {
+      await supertest(app)
+        .patch(`${apiPrefix}/users/1`)
+        .send({ username: 'updatedUser', email: 'updated@example.com' })
+        .expect(401)
+    })
+
+    it('deleteUser returns 204', async () => {
+      await supertest(app)
+        .delete(`${apiPrefix}/users/1`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .expect(204)
+    })
+    it('deleteUser returns 401 when unauthorized', async () => {
+      await supertest(app)
+        .delete(`${apiPrefix}/users/1`)
+        .expect(401)
+    })
+  })
+
+  describe('Stock Operations', () => {
+    it('listStocks returns 200', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/stocks`)
+        .expect(200)
+        .then((res) => {
+          expect(Array.isArray(res.body)).toBe(true)
+        })
+    })
+
+    it('getStock returns 200', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/stocks/1`)
+        .expect(200)
+        .then((res) => {
+          expect(res.body).toHaveProperty('id', 1)
+        })
+    })
+
+    it('getStockPrices returns 200', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/stocks/1/prices`)
+        .expect(200)
+        .then((res) => {
+          expect(Array.isArray(res.body)).toBe(true)
+        })
+    })
+  })
+
+  describe('Watchlist Operations', () => {
+    it('listWatchlists returns 200', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/watchlists`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .expect(200)
+        .then((res) => {
+          expect(Array.isArray(res.body)).toBe(true)
+        })
+    })
+
+    it('createWatchlist returns 201', async () => {
+      const expectedStatusCode = 201
+      await supertest(app)
+        .post(`${apiPrefix}/watchlists`)
+        .send({ name: 'New Watchlist' })
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .expect((res) => {
+          if (res.status !== expectedStatusCode) {
+            console.log('response body:\n', JSON.stringify(res.body, null, 2))
+          }
+        })
+        .expect(expectedStatusCode)
+        .then((res) => {
+          expect(res.body).toHaveProperty('name', 'New Watchlist')
+          expect(res.body).toHaveProperty('id', 1)
+        })
+    })
+
+    it('getWatchlist returns 200', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/watchlists/1`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .expect(200)
+        .then((res) => {
+          expect(res.body).toHaveProperty('id', 1)
+        })
+    })
+
+    it('updateWatchlist returns 200', async () => {
+      await supertest(app)
+        .patch(`${apiPrefix}/watchlists/1`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .send({ name: 'Updated Watchlist' })
+        .expect(200)
+        .then((res) => {
+          expect(res.body).toHaveProperty('name', 'Updated Watchlist')
+        })
+    })
+
+    it('deleteWatchlist returns 204', async () => {
+      await supertest(app)
+        .delete(`${apiPrefix}/watchlists/1`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .expect(204)
+    })
+
+    it('addStockToWatchlist returns 201', async () => {
+      await supertest(app)
+        .post(`${apiPrefix}/watchlists/1/stocks`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .send({ stock_id: 1 })
+        .expect(201)
+        .then((res) => {
+          expect(res.body).toHaveProperty('stock_id', 1)
+        })
+    })
+
+    it('listStocksInWatchlist returns 200', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/watchlists/1/stocks`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .expect(200)
+        .then((res) => {
+          expect(Array.isArray(res.body)).toBe(true)
+        })
+    })
+
+    it('removeStockFromWatchlist returns 204', async () => {
+      await supertest(app)
+        .delete(`${apiPrefix}/watchlists/1/stocks/1`)
+        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .expect(204)
+    })
+
+    // Unauthorized
+    it('listWatchlists returns 401 when unauthorized', async () => {
+      await supertest(app).get(`${apiPrefix}/watchlists`).expect(401)
+    })
+    it('createWatchlist returns 401 when unauthorized', async () => {
+      await supertest(app)
+        .post(`${apiPrefix}/watchlists`)
+        .send({ name: 'New Watchlist' })
+        .expect(401)
+    })
+    it('getWatchlist returns 401 when unauthorized', async () => {
+      await supertest(app).get(`${apiPrefix}/watchlists/1`).expect(401)
+    })
+    it('updateWatchlist returns 401 when unauthorized', async () => {
+      await supertest(app)
+        .patch(`${apiPrefix}/watchlists/1`)
+        .send({ name: 'Updated Watchlist' })
+        .expect(401)
+    })
+    it('deleteWatchlist returns 401 when unauthorized', async () => {
+      await supertest(app).delete(`${apiPrefix}/watchlists/1`).expect(401)
+    })
+    it('addStockToWatchlist returns 401 when unauthorized', async () => {
+      await supertest(app)
+        .post(`${apiPrefix}/watchlists/1/stocks`)
+        .send({ stock_id: 1 })
+        .expect(401)
+    })
+    it('listStocksInWatchlist returns 401 when unauthorized', async () => {
+      await supertest(app).get(`${apiPrefix}/watchlists/1/stocks`).expect(401)
+    })
+    it('removeStockFromWatchlist returns 401 when unauthorized', async () => {
+      await supertest(app).delete(`${apiPrefix}/watchlists/1/stocks/1`).expect(401)
+    })
   })
 })

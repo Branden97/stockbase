@@ -1,8 +1,5 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express'
 
-export const deleteWatchlistHandler = (req: Request, res: Response) => {
-  res.json({
-    message: "This is a stub response for the watchlists/deleteWatchlist operation.",
-    exampleData: {}
-  });
-};
+export const deleteWatchlistHandler: RequestHandler = (req, res) => {
+  res.status(204).json()
+}

@@ -1,8 +1,5 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express'
 
-export const loginHandler = (req: Request, res: Response) => {
-  res.json({
-    message: "This is a stub response for the auth/login operation.",
-    exampleData: {"token": "example.jwt.token"}
-  });
-};
+export const loginHandler: RequestHandler = (req, res) => {
+  res.json({ token: 'example.jwt.token' })
+}

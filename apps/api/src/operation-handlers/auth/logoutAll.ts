@@ -1,8 +1,5 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express'
 
-export const logoutAllHandler = (req: Request, res: Response) => {
-  res.json({
-    message: "This is a stub response for the auth/logoutAll operation.",
-    exampleData: {}
-  });
-};
+export const logoutAllHandler: RequestHandler = (req, res) => {
+  res.status(204).json()
+}
