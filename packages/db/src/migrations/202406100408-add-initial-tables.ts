@@ -85,7 +85,7 @@ export async function up(queryInterface: MigrationContext): Promise<void> {
         `,
         { transaction }
       )
-    } catch (error) {
+    } catch (error: any) {
       console.error(error.message)
       transaction.rollback()
       throw error.message
