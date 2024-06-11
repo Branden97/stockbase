@@ -1,6 +1,6 @@
 // Import necessary modules
-import * as yup from 'yup'
 import path from 'node:path'
+import * as yup from 'yup'
 import { config as dotenvConfig } from 'dotenv'
 
 const envPath = path.resolve(__dirname, '../', '.env')

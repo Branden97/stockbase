@@ -44,5 +44,5 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   // has many watchlists
   @HasMany(() => Watchlist, 'userId')
-  declare watchlists: Watchlist[]
+  declare watchlists: CreationOptional<Watchlist[]>
 }

@@ -10,6 +10,7 @@ import { Attribute } from '@sequelize/core/decorators-legacy'
 import { PostgresDialect } from '@sequelize/postgres'
 import { loadDbConfig } from './config'
 import { User, Stock, Watchlist, WatchlistStock, StockPrice } from './models'
+import { log, error as logError } from '@repo/logger'
 
 const config = loadDbConfig()
 
@@ -45,9 +46,9 @@ export async function connectToDatabase(): Promise<Sequelize> {
 
   try {
     await sequelize.authenticate()
-    console.log('Connected to database.')
+    log('Connected to database.')
   } catch (error) {
-    console.error('Unable to connect to the database:', error)
+    logError('Unable to connect to the database:', error)
   }
   return sequelize
 }

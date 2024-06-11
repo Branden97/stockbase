@@ -57,15 +57,24 @@ describe('@repo/api-spec', () => {
 
   it('defines security schemes', () => {
     const securitySchemes = apispec.components?.securitySchemes
-    expect(securitySchemes).toHaveProperty('BearerAuth')
+    expect(securitySchemes).toHaveProperty('JWT_Token')
+    expect(securitySchemes).toHaveProperty('JWT_Refresh_Token')
 
-    const bearerAuth = securitySchemes?.BearerAuth
-    if (isSecuritySchemeObject(bearerAuth)) {
-      expect(bearerAuth.type).toBe('http')
-      expect(bearerAuth.scheme).toBe('bearer')
-      expect(bearerAuth.bearerFormat).toBe('JWT')
+    const jwt_token = securitySchemes?.JWT_Token
+    if (isSecuritySchemeObject(jwt_token)) {
+      expect(jwt_token.type).toBe('http')
+      expect(jwt_token.scheme).toBe('bearer')
+      expect(jwt_token.bearerFormat).toBe('JWT')
     } else {
-      throw new Error('BearerAuth is not a valid SecuritySchemeObject')
+      throw new Error('JWT_Token is not a valid SecuritySchemeObject')
+    }
+    const jwt_refresh_token = securitySchemes?.JWT_Refresh_Token
+    if (isSecuritySchemeObject(jwt_refresh_token)) {
+      expect(jwt_refresh_token.type).toBe('http')
+      expect(jwt_refresh_token.scheme).toBe('bearer')
+      expect(jwt_refresh_token.bearerFormat).toBe('JWT')
+    } else {
+      throw new Error('JWT_Refresh_Token is not a valid SecuritySchemeObject')
     }
   })
 

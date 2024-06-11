@@ -1,11 +1,29 @@
 import supertest from 'supertest'
+import { type Express } from 'express'
+import { log } from '@repo/logger'
 import { createServer } from '../server'
+import { JwtService } from '../middlewares/auth-middleware'
 
 const apiPrefix = '/api/v0'
-const VALID_TOKEN = 'asdf'
+// const VALID_TOKEN = 'asdf'
+// const VALID_REFRESH_TOKEN = 'asdf'
 
-describe('Server', () => {
-  const app = createServer()
+const { token: VALID_TOKEN, refreshToken: VALID_REFRESH_TOKEN } = JwtService.createTokenPair({
+  userId: 'asdf',
+})
+
+describe('API Server', () => {
+  let app: Express
+
+  beforeAll(async () => {
+    // Initialize the server only when running this suite
+    app = await createServer()
+  })
+
+  afterAll(async () => {
+    // Optionally, close the server or perform cleanup if necessary
+    await app.db.close()
+  })
 
   describe('Health Check', () => {
     it('returns 200', async () => {
@@ -44,21 +62,48 @@ describe('Server', () => {
         })
     })
 
+    it('refreshToken returns 200', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/refreshToken`)
+        .set('Cookie', [`refreshToken=${VALID_REFRESH_TOKEN}`])
+        .expect((res) => {
+          if (res.status !== 200) {
+            log('response body:\n', JSON.stringify(res.body, null, 2))
+          }
+        })
+        .expect(200)
+    })
+
+    it('refreshToken returns 401 if no refreshToken cookie', async () => {
+      await supertest(app).get(`${apiPrefix}/refreshToken`).expect(401)
+    })
+
     it('logoutAll returns 204', async () => {
       await supertest(app)
-        .post(`${apiPrefix}/logoutAll`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .get(`${apiPrefix}/logoutAll`)
+        .set('Cookie', [`token=${VALID_TOKEN}`])
         .expect(204)
     })
 
     it('logoutAll returns 401 when unauthorized', async () => {
-      await supertest(app).post(`${apiPrefix}/logoutAll`).expect(401)
+      await supertest(app).get(`${apiPrefix}/logoutAll`).expect(401)
+    })
+
+    it('logout returns 204', async () => {
+      await supertest(app)
+        .get(`${apiPrefix}/logout`)
+        .set('Cookie', [`token=${VALID_TOKEN}`])
+        .expect(204)
+    })
+
+    it('logout returns 401 when unauthorized', async () => {
+      await supertest(app).get(`${apiPrefix}/logout`).expect(401)
     })
 
     it('getUser returns 200', async () => {
       await supertest(app)
         .get(`${apiPrefix}/users/1`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .set('Cookie', [`token=${VALID_TOKEN}`])
         .expect(200)
         .then((res) => {
           expect(res.body).toHaveProperty('id', 1)
@@ -66,15 +111,13 @@ describe('Server', () => {
     })
 
     it('getUser returns 401 when unauthorized', async () => {
-      await supertest(app)
-        .get(`${apiPrefix}/users/1`)
-        .expect(401)
+      await supertest(app).get(`${apiPrefix}/users/1`).expect(401)
     })
 
     it('updateUser returns 200', async () => {
       await supertest(app)
         .patch(`${apiPrefix}/users/1`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .set('Cookie', [`token=${VALID_TOKEN}`])
         .send({ username: 'updatedUser', email: 'updated@example.com' })
         .expect(200)
         .then((res) => {
@@ -92,13 +135,11 @@ describe('Server', () => {
     it('deleteUser returns 204', async () => {
       await supertest(app)
         .delete(`${apiPrefix}/users/1`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
+        .set('Cookie', [`token=${VALID_TOKEN}`])
         .expect(204)
     })
     it('deleteUser returns 401 when unauthorized', async () => {
-      await supertest(app)
-        .delete(`${apiPrefix}/users/1`)
-        .expect(401)
+      await supertest(app).delete(`${apiPrefix}/users/1`).expect(401)
     })
   })
 
@@ -132,88 +173,93 @@ describe('Server', () => {
   })
 
   describe('Watchlist Operations', () => {
-    it('listWatchlists returns 200', async () => {
-      await supertest(app)
-        .get(`${apiPrefix}/watchlists`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
-        .expect(200)
-        .then((res) => {
-          expect(Array.isArray(res.body)).toBe(true)
-        })
-    })
+    describe('Authorized', () => {
+      beforeAll(() => {
+        // mock app.jwtService
+      })
+      it('listWatchlists returns 200', async () => {
+        await supertest(app)
+          .get(`${apiPrefix}/watchlists`)
+          .set('Cookie', `token=${VALID_TOKEN}`)
+          .expect(200)
+          .then((res) => {
+            expect(Array.isArray(res.body)).toBe(true)
+          })
+      })
 
-    it('createWatchlist returns 201', async () => {
-      const expectedStatusCode = 201
-      await supertest(app)
-        .post(`${apiPrefix}/watchlists`)
-        .send({ name: 'New Watchlist' })
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
-        .expect((res) => {
-          if (res.status !== expectedStatusCode) {
-            console.log('response body:\n', JSON.stringify(res.body, null, 2))
-          }
-        })
-        .expect(expectedStatusCode)
-        .then((res) => {
-          expect(res.body).toHaveProperty('name', 'New Watchlist')
-          expect(res.body).toHaveProperty('id', 1)
-        })
-    })
+      it('createWatchlist returns 201', async () => {
+        const expectedStatusCode = 201
+        await supertest(app)
+          .post(`${apiPrefix}/watchlists`)
+          .send({ name: 'New Watchlist' })
+          .set('Cookie', [`token=${VALID_TOKEN}`])
+          .expect((res) => {
+            if (res.status !== expectedStatusCode) {
+              log('response body:\n', JSON.stringify(res.body, null, 2))
+            }
+          })
+          .expect(expectedStatusCode)
+          .then((res) => {
+            expect(res.body).toHaveProperty('name', 'New Watchlist')
+            expect(res.body).toHaveProperty('id', 1)
+          })
+      })
 
-    it('getWatchlist returns 200', async () => {
-      await supertest(app)
-        .get(`${apiPrefix}/watchlists/1`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
-        .expect(200)
-        .then((res) => {
-          expect(res.body).toHaveProperty('id', 1)
-        })
-    })
+      it('getWatchlist returns 200', async () => {
+        await supertest(app)
+          .get(`${apiPrefix}/watchlists/1`)
+          .set('Cookie', [`token=${VALID_TOKEN}`])
+          .expect(200)
+          .then((res) => {
+            expect(res.body).toHaveProperty('id', 1)
+          })
+      })
 
-    it('updateWatchlist returns 200', async () => {
-      await supertest(app)
-        .patch(`${apiPrefix}/watchlists/1`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
-        .send({ name: 'Updated Watchlist' })
-        .expect(200)
-        .then((res) => {
-          expect(res.body).toHaveProperty('name', 'Updated Watchlist')
-        })
-    })
+      it('updateWatchlist returns 200', async () => {
+        await supertest(app)
+          .patch(`${apiPrefix}/watchlists/1`)
+          .set('Cookie', [`token=${VALID_TOKEN}`])
+          .send({ name: 'Updated Watchlist' })
+          .expect(200)
+          .then((res) => {
+            expect(res.body).toHaveProperty('name', 'Updated Watchlist')
+          })
+      })
 
-    it('deleteWatchlist returns 204', async () => {
-      await supertest(app)
-        .delete(`${apiPrefix}/watchlists/1`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
-        .expect(204)
-    })
+      it('deleteWatchlist returns 204', async () => {
+        await supertest(app)
+          .delete(`${apiPrefix}/watchlists/1`)
+          .set('Cookie', [`token=${VALID_TOKEN}`])
+          .expect(204)
+      })
 
-    it('addStockToWatchlist returns 201', async () => {
-      await supertest(app)
-        .post(`${apiPrefix}/watchlists/1/stocks`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
-        .send({ stock_id: 1 })
-        .expect(201)
-        .then((res) => {
-          expect(res.body).toHaveProperty('stock_id', 1)
-        })
-    })
+      it('addStockToWatchlist returns 201', async () => {
+        await supertest(app)
+          .post(`${apiPrefix}/watchlists/1/stocks`)
+          .set('Cookie', [`token=${VALID_TOKEN}`])
+          .send({ stock_id: 1 })
+          .expect(201)
+          .then((res) => {
+            expect(res.body).toHaveProperty('stock_id', 1)
+          })
+      })
 
-    it('listStocksInWatchlist returns 200', async () => {
-      await supertest(app)
-        .get(`${apiPrefix}/watchlists/1/stocks`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
-        .expect(200)
-        .then((res) => {
-          expect(Array.isArray(res.body)).toBe(true)
-        })
-    })
+      it('listStocksInWatchlist returns 200', async () => {
+        await supertest(app)
+          .get(`${apiPrefix}/watchlists/1/stocks`)
+          .set('Cookie', [`token=${VALID_TOKEN}`])
+          .expect(200)
+          .then((res) => {
+            expect(Array.isArray(res.body)).toBe(true)
+          })
+      })
 
-    it('removeStockFromWatchlist returns 204', async () => {
-      await supertest(app)
-        .delete(`${apiPrefix}/watchlists/1/stocks/1`)
-        .set('Authorization', `Bearer ${VALID_TOKEN}`)
-        .expect(204)
+      it('removeStockFromWatchlist returns 204', async () => {
+        await supertest(app)
+          .delete(`${apiPrefix}/watchlists/1/stocks/1`)
+          .set('Cookie', [`token=${VALID_TOKEN}`])
+          .expect(204)
+      })
     })
 
     // Unauthorized

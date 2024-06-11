@@ -1,8 +1,9 @@
+import { error } from '@repo/logger'
 import { ErrorRequestHandler } from 'express'
 
 export const errorHandler: ErrorRequestHandler = (err: Error, req, res, next) => {
   // TODO: Handle various error cases here
-  console.error(err)
+  error(err)
 
   // Set the response status code
   // @ts-ignore

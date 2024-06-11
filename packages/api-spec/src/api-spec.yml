@@ -60,6 +60,24 @@ paths:
         '409':
           description: User already exists
 
+  /refreshToken:
+    get:
+      summary: Refresh your Access Token
+      description: Refresh your Access Token using the Refresh Token so you stay logged in longer.
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Authenticated
+        '401':
+          description: Unauthenticated
+      operationId: refreshToken
+      x-eov-operation-handler: refreshToken
+      security:
+        - JWT_Refresh_Token: []
+      parameters: []
+    parameters: []
+
   /login:
     post:
       tags:
@@ -84,16 +102,32 @@ paths:
         '401':
           description: Invalid credentials
 
+  /logout:
+    get:
+      tags:
+        - auth
+      summary: Logout current "session"
+      description: Logs-out the user from the current device by invalidating the current token/refreshToken pair.
+      operationId: logout
+      x-eov-operation-handler: auth/logout
+      security:
+        - JWT_Token: []
+      responses:
+        '204':
+          description: Logged out successfully
+        '401':
+          description: Unauthorized
+
   /logoutAll:
-    post:
+    get:
       tags:
         - auth
       summary: Logout all devices
-      description: Logs out the user from all devices by invalidating all active tokens.
+      description: Logs-out the user from all devices by invalidating all active tokens.
       operationId: logoutAll
       x-eov-operation-handler: auth/logoutAll
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       responses:
         '204':
           description: Logged out from all devices successfully
@@ -109,7 +143,7 @@ paths:
       operationId: getUser
       x-eov-operation-handler: users/getUser
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       parameters:
         - name: userId
           in: path
@@ -138,7 +172,7 @@ paths:
       operationId: updateUser
       x-eov-operation-handler: users/updateUser
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       parameters:
         - name: userId
           in: path
@@ -172,7 +206,7 @@ paths:
       operationId: deleteUser
       x-eov-operation-handler: users/deleteUser
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       parameters:
         - name: userId
           in: path
@@ -267,7 +301,7 @@ paths:
       operationId: listWatchlists
       x-eov-operation-handler: watchlists/listWatchlists
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       responses:
         '200':
           description: List of watchlists retrieved successfully
@@ -286,7 +320,7 @@ paths:
       operationId: createWatchlist
       x-eov-operation-handler: watchlists/createWatchlist
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       requestBody:
         required: true
         content:
@@ -310,7 +344,7 @@ paths:
       operationId: getWatchlist
       x-eov-operation-handler: watchlists/getWatchlist
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       parameters:
         - name: watchlistId
           in: path
@@ -336,7 +370,7 @@ paths:
       operationId: deleteWatchlist
       x-eov-operation-handler: watchlists/deleteWatchlist
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       parameters:
         - name: watchlistId
           in: path
@@ -358,7 +392,7 @@ paths:
       operationId: updateWatchlist
       x-eov-operation-handler: watchlists/updateWatchlist
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       parameters:
         - name: watchlistId
           in: path
@@ -391,7 +425,7 @@ paths:
       operationId: addStockToWatchlist
       x-eov-operation-handler: watchlists/addStockToWatchlist
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       parameters:
         - name: watchlistId
           in: path
@@ -423,7 +457,7 @@ paths:
       operationId: listStocksInWatchlist
       x-eov-operation-handler: watchlists/listStocksInWatchlist
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       parameters:
         - name: watchlistId
           in: path
@@ -452,7 +486,7 @@ paths:
       operationId: removeStockFromWatchlist
       x-eov-operation-handler: watchlists/removeStockFromWatchlist
       security:
-        - BearerAuth: []
+        - JWT_Token: []
       parameters:
         - name: watchlistId
           in: path
@@ -474,10 +508,14 @@ paths:
 
 components:
   securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    JWT_Token:
+      type: apiKey
+      in: cookie
+      name: token
+    JWT_Refresh_Token:
+      type: apiKey
+      in: cookie
+      name: refreshToken
 
   schemas:
     SignupRequest:
