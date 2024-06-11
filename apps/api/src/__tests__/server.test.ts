@@ -237,10 +237,10 @@ describe('API Server', () => {
         await supertest(app)
           .post(`${apiPrefix}/watchlists/1/stocks`)
           .set('Cookie', [`token=${VALID_TOKEN}`])
-          .send({ stock_id: 1 })
+          .send({ stockId: 1 })
           .expect(201)
           .then((res) => {
-            expect(res.body).toHaveProperty('stock_id', 1)
+            expect(res.body).toHaveProperty('stockId', 1)
           })
       })
 
@@ -285,10 +285,7 @@ describe('API Server', () => {
       await supertest(app).delete(`${apiPrefix}/watchlists/1`).expect(401)
     })
     it('addStockToWatchlist returns 401 when unauthorized', async () => {
-      await supertest(app)
-        .post(`${apiPrefix}/watchlists/1/stocks`)
-        .send({ stock_id: 1 })
-        .expect(401)
+      await supertest(app).post(`${apiPrefix}/watchlists/1/stocks`).send({ stockId: 1 }).expect(401)
     })
     it('listStocksInWatchlist returns 401 when unauthorized', async () => {
       await supertest(app).get(`${apiPrefix}/watchlists/1/stocks`).expect(401)
