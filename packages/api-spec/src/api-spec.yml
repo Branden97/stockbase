@@ -59,6 +59,10 @@ paths:
           description: Bad request
         '409':
           description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
 
   /refreshToken:
     get:
@@ -158,7 +162,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        
+
         '403':
           description: Unauthorized
         '404':
@@ -476,7 +480,7 @@ paths:
                   $ref: '#/components/schemas/WatchlistStock'
         '404':
           description: Watchlist not found
-  
+
   /watchlists/{watchlistId}/stocks/{stockId}:
     delete:
       tags:
@@ -518,52 +522,34 @@ components:
       name: refreshToken
 
   schemas:
+    ##
+    # Request Schemas
+    ##
+
     SignupRequest:
       type: object
       properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
         username:
           type: string
+          minLength: 3
         email:
-          type: string
+          $ref: '#/components/schemas/EmailField'
         password:
           type: string
+          minLength: 8
+
       required:
+        - firstName
+        - lastName
         - username
         - email
         - password
-
-    LoginRequest:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-      required:
-        - email
-        - password
-
-    LoginResponse:
-      type: object
-      properties:
-        token:
-          type: string
-
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-        username:
-          type: string
-        email:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
 
     UpdateUserRequest:
       type: object
@@ -571,62 +557,21 @@ components:
         username:
           type: string
         email:
-          type: string
+          $ref: '#/components/schemas/EmailField'
       required:
         - username
         - email
-    
-    Stock:
-      type: object
-      properties:
-        id:
-          type: integer
-        symbol:
-          type: string
-        company_name:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
 
-    StockPrice:
+    LoginRequest:
       type: object
       properties:
-        id:
-          type: integer
-        stock_id:
-          type: integer
-        price:
-          type: number
-          format: float
-        recorded_at:
+        email:
+          $ref: '#/components/schemas/EmailField'
+        password:
           type: string
-          format: date-time
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-
-    Watchlist:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        user_id:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
+      required:
+        - email
+        - password
 
     CreateWatchlistRequest:
       type: object
@@ -636,29 +581,13 @@ components:
       required:
         - name
 
-    WatchlistStock:
-      type: object
-      properties:
-        id:
-          type: integer
-        watchlist_id:
-          type: integer
-        stock_id:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-
     AddStockToWatchlistRequest:
       type: object
       properties:
-        stock_id:
+        stockId:
           type: integer
       required:
-        - stock_id
+        - stockId
 
     UpdateWatchlistRequest:
       type: object
@@ -667,3 +596,128 @@ components:
           type: string
       required:
         - name
+
+    ##
+    # Response Schemas
+    ##
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
+    SimpleErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    
+    ##
+    # Model Schemas
+    ##
+
+    User:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          $ref: '#/components/schemas/EmailField'
+        # createdAt:
+        #   type: string
+        #   format: date-time
+        # updatedAt:
+        #   type: string
+        #   format: date-time
+
+    Stock:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        company_name:
+          type: string
+        # createdAt:
+        #   type: string
+        #   format: date-time
+        # updatedAt:
+        #   type: string
+        #   format: date-time
+
+    StockPrice:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        stockId:
+          type: integer
+        price:
+          type: number
+          format: float
+        recordedAt:
+          type: string
+          format: date-time
+        # createdAt:
+        #   type: string
+        #   format: date-time
+        # updatedAt:
+        #   type: string
+        #   format: date-time
+
+    Watchlist:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        userId:
+          type: integer
+        # createdAt:
+        #   type: string
+        #   format: date-time
+        # updatedAt:
+        #   type: string
+        #   format: date-time
+
+    WatchlistStock:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        watchlistId:
+          type: integer
+        stockId:
+          type: integer
+        # createdAt:
+        #   type: string
+        #   format: date-time
+        # updatedAt:
+        #   type: string
+        #   format: date-time
+
+    ##
+    # Common Field Schemas
+    ##
+
+    EmailField:
+      type: string
+      format: email
+
+    PasswordField:
+      type: string
+      minLength: 8
+
+    UsernameField:
+      type: string
+      minLength: 3

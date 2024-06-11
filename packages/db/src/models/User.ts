@@ -6,14 +6,15 @@ import {
   CreationOptional,
 } from '@sequelize/core'
 import {
-  Attribute,
   Table,
-  PrimaryKey,
-  AutoIncrement,
+  Attribute,
   Unique,
   NotNull,
   HasMany,
+  BeforeValidate,
+  BeforeSave,
 } from '@sequelize/core/decorators-legacy'
+import bcrypt from 'bcrypt'
 import { Watchlist } from './Watchlist'
 
 @Table({
@@ -22,12 +23,6 @@ import { Watchlist } from './Watchlist'
   paranoid: true,
 })
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-//   @NotNull
-//   @PrimaryKey
-//   @AutoIncrement
-//   @Attribute(DataTypes.INTEGER)
-//   declare id: CreationOptional<number>
-
   @Unique
   @NotNull
   @Attribute(DataTypes.STRING(50))
@@ -40,9 +35,28 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   @NotNull
   @Attribute(DataTypes.STRING(255))
-  declare passwordHash: string
+  declare passwordHash: CreationOptional<string>
 
-  // has many watchlists
   @HasMany(() => Watchlist, 'userId')
   declare watchlists: CreationOptional<Watchlist[]>
+
+  // New-password field for plaintext password
+  public newPassword?: string = undefined
+
+  // set newPassword upon instance creation
+  constructor(values?: InferCreationAttributes<User>) {
+    super(values)
+    this.newPassword = values?.newPassword
+  }
+
+  // TODO: method for comparing plaintext password with hashed password
+
+  @BeforeSave
+  @BeforeValidate
+  static async hashPassword(instance: User) {
+    if (instance.newPassword) {
+      instance.passwordHash = await bcrypt.hash(instance.newPassword, 10)
+      instance.newPassword = undefined
+    }
+  }
 }

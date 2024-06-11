@@ -1,5 +1,5 @@
 import { json, urlencoded } from 'body-parser'
-import express, { type Express } from 'express'
+import express, { type Express, static as serveStatic } from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -69,8 +69,11 @@ export const createServer = async (): Promise<Express> => {
       OpenApiValidator.middleware({
         // @ts-ignore
         apiSpec: schema,
-        validateRequests: true, // (default)
-        validateResponses: true, // false by default
+        validateRequests: true,
+        validateResponses: {
+          coerceTypes: true,
+          removeAdditional: true,
+        }, 
         validateSecurity: {
           handlers: {
             JWT_Token: JwtService.jwtSecurityHandler,
