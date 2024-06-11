@@ -5,7 +5,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import serverTiming from 'server-timing'
 import * as swaggerUI from 'swagger-ui-express'
-import schema from '@repo/api-spec'
+import schema, { apiSpecPath } from '@repo/api-spec'
 import * as OpenApiValidator from 'express-openapi-validator'
 import { log } from '@repo/logger'
 import { connectToDatabase } from '@repo/db'
@@ -63,6 +63,7 @@ export const createServer = async (): Promise<Express> => {
       })
     )
     .use(JwtService.extractJwtsMiddleware)
+    .use('/spec', serveStatic(apiSpecPath))
     .use('/api-docs', swaggerUI.serve, swaggerUI.setup(schema))
     .use(
       OpenApiValidator.middleware({
