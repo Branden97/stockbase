@@ -318,6 +318,10 @@ paths:
                 $ref: '#/components/schemas/Stock'
         '404':
           description: Stock not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
 
   /stocks/{stockId}/prices:
     get:
