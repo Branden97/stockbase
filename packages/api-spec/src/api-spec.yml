@@ -447,10 +447,10 @@ paths:
     post:
       tags:
         - watchlists
-      summary: Add stock to watchlist
-      description: Adds a stock to a specific watchlist.
-      operationId: addStockToWatchlist
-      x-eov-operation-handler: watchlists/addStockToWatchlist
+      summary: Add stocks to watchlist
+      description: Adds an array of stocks to a specific watchlist.
+      operationId: addStocksToWatchlist
+      x-eov-operation-handler: watchlists/addStocksToWatchlist
       security:
         - JWT_Token: []
       parameters:
@@ -465,12 +465,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddStockToWatchlistRequest'
+              type: array
+              description: Array of Stocks *successfully* added to the watchlist
+              items:
+                type: number
+                description: ID of the Stock to add to the watchlist
       responses:
         '201':
           description: Stock added to watchlist successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stock'
+        '409':
+          description: Stock(s) already in watchlist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
         '404':
           description: Watchlist or stock not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
 
     get:
       tags:
@@ -610,14 +630,6 @@ components:
       required:
         - name
 
-    AddStockToWatchlistRequest:
-      type: object
-      properties:
-        stockId:
-          type: integer
-      required:
-        - stockId
-
     UpdateWatchlistRequest:
       type: object
       properties:
@@ -702,16 +714,6 @@ components:
         userId:
           type: integer
 
-    WatchlistStock:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: integer
-        watchlistId:
-          type: integer
-        stockId:
-          type: integer
 
     ##
     # Common Field Schemas
@@ -721,6 +723,7 @@ components:
       type: string
       format: email
 
+    # Will use this when I implement updating the user
     PasswordField:
       type: string
       minLength: 8

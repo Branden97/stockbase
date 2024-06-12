@@ -1,13 +1,15 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes } from '@sequelize/core'
+import {
+  Model,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from '@sequelize/core'
 import {
   Attribute,
   Table,
-  Column,
-  CreatedAt,
-  UpdatedAt,
   PrimaryKey,
   AutoIncrement,
-  BelongsTo,
   NotNull,
 } from '@sequelize/core/decorators-legacy'
 import { Watchlist } from './Watchlist'
@@ -24,12 +26,12 @@ export class WatchlistStock extends Model<
   @PrimaryKey
   @AutoIncrement
   @Attribute(DataTypes.INTEGER)
-  declare id: number
- 
+  declare id: CreationOptional<number>
+
   // @BelongsTo(() => Watchlist, { foreignKey: 'watchlistId' })
   // @Attribute(DataTypes.INTEGER)
   // declare watchlist: Watchlist
-  
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare watchlistId: number
@@ -37,9 +39,8 @@ export class WatchlistStock extends Model<
   // @BelongsTo(() => Stock, { foreignKey: 'stockId' })
   // @Attribute(DataTypes.INTEGER)
   // declare stock: Stock
-  
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare stockId: number
-
 }

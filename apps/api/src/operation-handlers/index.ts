@@ -12,7 +12,7 @@ export * from './users/getUser'
 export * from './users/deleteUser'
 export * from './users/updateUser'
 
-export * from './watchlists/addStockToWatchlist'
+export * from './watchlists/addStocksToWatchlist'
 export * from './watchlists/createWatchlist'
 export * from './watchlists/deleteWatchlist'
 export * from './watchlists/getWatchlist'

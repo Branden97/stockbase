@@ -135,9 +135,7 @@ describe('@repo/api-spec', () => {
         // @ts-ignore
         expect(paths[path][method]).toHaveProperty('x-eov-operation-handler')
         // @ts-ignore
-        expect(paths[path][method]['x-eov-operation-handler']).toEqual(
-          expect.any(String)
-        )
+        expect(paths[path][method]['x-eov-operation-handler']).toEqual(expect.any(String))
       })
     })
   })
@@ -153,7 +151,7 @@ describe('@repo/api-spec', () => {
     expect(schemas).toHaveProperty('Watchlist')
     expect(schemas).toHaveProperty('CreateWatchlistRequest')
     expect(schemas).toHaveProperty('WatchlistStock')
-    expect(schemas).toHaveProperty('AddStockToWatchlistRequest')
+    expect(schemas).toHaveProperty('addStocksToWatchlistRequest')
     expect(schemas).toHaveProperty('UpdateUserRequest')
     expect(schemas).toHaveProperty('UpdateWatchlistRequest')
   })

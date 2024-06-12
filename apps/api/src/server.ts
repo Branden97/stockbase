@@ -10,9 +10,9 @@ import * as OpenApiValidator from 'express-openapi-validator'
 import { log } from '@repo/logger'
 import { connectToDatabase } from '@repo/db'
 import { Redis } from 'ioredis'
-import {middleware as paginationMiddleware} from 'express-paginate'
+import { middleware as paginationMiddleware } from 'express-paginate'
 import {
-  addStockToWatchlistHandler,
+  addStocksToWatchlistHandler,
   createWatchlistHandler,
   deleteUserHandler,
   deleteWatchlistHandler,
@@ -105,7 +105,7 @@ export const createServer = async (): Promise<Express> => {
     .get('/api/v0/watchlists/:watchlistId', getWatchlistHandler)
     .patch('/api/v0/watchlists/:watchlistId', updateWatchlistHandler)
     .delete('/api/v0/watchlists/:watchlistId', deleteWatchlistHandler)
-    .post('/api/v0/watchlists/:watchlistId/stocks', addStockToWatchlistHandler)
+    .post('/api/v0/watchlists/:watchlistId/stocks', addStocksToWatchlistHandler)
     .get('/api/v0/watchlists/:watchlistId/stocks', listStocksInWatchlistHandler)
     .delete('/api/v0/watchlists/:watchlistId/stocks/:stockId', removeStockFromWatchlistHandler)
     .use(errorHandler)

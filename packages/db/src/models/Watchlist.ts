@@ -1,9 +1,13 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from '@sequelize/core'
+import {
+  Model,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from '@sequelize/core'
 import {
   Attribute,
   Table,
-  CreatedAt,
-  UpdatedAt,
   PrimaryKey,
   AutoIncrement,
   BelongsTo,
@@ -36,9 +40,12 @@ export class Watchlist extends Model<
   // This is the foreign key
   @Attribute(DataTypes.INTEGER)
   @NotNull
-  declare userId: number;
+  declare userId: number
 
   // has many watchlistStocks
   @HasMany(() => WatchlistStock, { foreignKey: 'watchlistId', inverse: 'watchlist' })
   declare watchlistStocks: CreationOptional<WatchlistStock[]>
+
+  // TODO: look into why this method isn't being added by sequelize
+  // declare addStocks: HasManyAddAssociationsMixin<Stock, number>
 }
