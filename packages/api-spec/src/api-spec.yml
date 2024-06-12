@@ -243,15 +243,22 @@ paths:
       description: Retrieves a list of all stocks.
       operationId: listStocks
       x-eov-operation-handler: stocks/listStocks
+      parameters:
+        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: '#/components/parameters/paginationPage'
       responses:
         '200':
           description: List of stocks retrieved successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Stock'
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponseFields'
+                  - properties:
+                      stocks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Stock'
 
   /stocks/{stockId}:
     get:
@@ -644,12 +651,7 @@ components:
           type: string
         email:
           $ref: '#/components/schemas/EmailField'
-        # createdAt:
-        #   type: string
-        #   format: date-time
-        # updatedAt:
-        #   type: string
-        #   format: date-time
+
 
     Stock:
       type: object
@@ -659,14 +661,9 @@ components:
           type: integer
         symbol:
           type: string
-        company_name:
+        companyName:
           type: string
-        # createdAt:
-        #   type: string
-        #   format: date-time
-        # updatedAt:
-        #   type: string
-        #   format: date-time
+
 
     StockPrice:
       type: object
@@ -682,12 +679,7 @@ components:
         recordedAt:
           type: string
           format: date-time
-        # createdAt:
-        #   type: string
-        #   format: date-time
-        # updatedAt:
-        #   type: string
-        #   format: date-time
+
 
     Watchlist:
       type: object
@@ -699,12 +691,7 @@ components:
           type: string
         userId:
           type: integer
-        # createdAt:
-        #   type: string
-        #   format: date-time
-        # updatedAt:
-        #   type: string
-        #   format: date-time
+
 
     WatchlistStock:
       type: object
@@ -716,12 +703,7 @@ components:
           type: integer
         stockId:
           type: integer
-        # createdAt:
-        #   type: string
-        #   format: date-time
-        # updatedAt:
-        #   type: string
-        #   format: date-time
+
 
     ##
     # Common Field Schemas
@@ -738,3 +720,44 @@ components:
     UsernameField:
       type: string
       minLength: 3
+
+
+    ##
+    # Common Pagination Schemas
+    ##
+
+    PaginationResponseFields:
+      type: object
+      properties:
+        paginationMeta:
+          type: object
+          properties:
+            totalPages:
+              type: integer
+            totalItems:
+              type: integer
+            limit:
+              type: integer
+            currentPage:
+              type: integer
+
+  parameters:
+    paginationLimit:
+      name: limit
+      in: query
+      description: The number of items to return.
+      required: false
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 100
+        default: 10
+    paginationPage:
+      name: page
+      in: query
+      description: The page number to return.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1

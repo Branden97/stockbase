@@ -1,13 +1,18 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes } from '@sequelize/core'
+import {
+  Model,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from '@sequelize/core'
 import {
   Attribute,
   Table,
-  CreatedAt,
-  UpdatedAt,
   PrimaryKey,
   AutoIncrement,
   Unique,
   HasMany,
+  NotNull,
 } from '@sequelize/core/decorators-legacy'
 import { WatchlistStock } from './WatchlistStock'
 import { StockPrice } from './StockPrice'
@@ -17,10 +22,11 @@ import { StockPrice } from './StockPrice'
   timestamps: true,
 })
 export class Stock extends Model<InferAttributes<Stock>, InferCreationAttributes<Stock>> {
+  @NotNull
   @PrimaryKey
   @AutoIncrement
   @Attribute(DataTypes.INTEGER)
-  declare id: number
+  declare id: CreationOptional<number>
 
   @Unique
   @Attribute(DataTypes.STRING(10))
@@ -31,10 +37,9 @@ export class Stock extends Model<InferAttributes<Stock>, InferCreationAttributes
 
   // has many watchlistStocks
   @HasMany(() => WatchlistStock, { foreignKey: 'stockId', inverse: 'stock' })
-  declare watchlistStocks: WatchlistStock[]
+  declare watchlistStocks: CreationOptional<WatchlistStock[]>
 
   // has many stockPrices
   @HasMany(() => StockPrice, { foreignKey: 'stockId', inverse: 'stock' })
-  declare stockPrices: StockPrice[]
-
+  declare stockPrices: CreationOptional<StockPrice[]>
 }

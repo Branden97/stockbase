@@ -1,4 +1,4 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes } from '@sequelize/core'
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from '@sequelize/core'
 import {
   Attribute,
   Table,
@@ -31,7 +31,7 @@ export class Watchlist extends Model<
 
   // belongs to user
   @BelongsTo(() => User, { foreignKey: 'userId' })
-  declare user: User
+  declare user: CreationOptional<User>
 
   // This is the foreign key
   @Attribute(DataTypes.INTEGER)
@@ -40,5 +40,5 @@ export class Watchlist extends Model<
 
   // has many watchlistStocks
   @HasMany(() => WatchlistStock, { foreignKey: 'watchlistId', inverse: 'watchlist' })
-  declare watchlistStocks: WatchlistStock[]
+  declare watchlistStocks: CreationOptional<WatchlistStock[]>
 }

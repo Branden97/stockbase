@@ -10,6 +10,7 @@ import * as OpenApiValidator from 'express-openapi-validator'
 import { log } from '@repo/logger'
 import { connectToDatabase } from '@repo/db'
 import { Redis } from 'ioredis'
+import {middleware as paginationMiddleware} from 'express-paginate'
 import {
   addStockToWatchlistHandler,
   createWatchlistHandler,
@@ -35,8 +36,10 @@ import { errorHandler } from './error-handler'
 import { handleTestingEndpointRequest } from './testing-endpoint'
 import { JwtService } from './middlewares/auth-middleware'
 import { loadApiConfig } from './config'
+import { castQueryParamsToNumber } from './middlewares/cast-query-params-to-number'
 
 export const createServer = async (): Promise<Express> => {
+  const apiConfig = loadApiConfig()
   const app = express()
   app
     .disable('x-powered-by')
@@ -73,7 +76,7 @@ export const createServer = async (): Promise<Express> => {
         validateResponses: {
           coerceTypes: true,
           removeAdditional: true,
-        }, 
+        },
         validateSecurity: {
           handlers: {
             JWT_Token: JwtService.jwtSecurityHandler,
@@ -82,7 +85,10 @@ export const createServer = async (): Promise<Express> => {
         },
       })
     )
+    .use(paginationMiddleware(apiConfig.PAGINATION_LIMIT, apiConfig.PAGINATION_LIMIT_MAX))
+    .use(castQueryParamsToNumber)
     // Manually set up routes with imported handlers 'cause setting up dynamic imports for OpenApiValidator is a headache
+    // TODO: Figure out how to dynamically import handlers
     .post('/api/v0/signup', signupHandler)
     .post('/api/v0/login', loginHandler)
     .get('/api/v0/refreshToken', refreshTokenHandler)
@@ -103,8 +109,6 @@ export const createServer = async (): Promise<Express> => {
     .get('/api/v0/watchlists/:watchlistId/stocks', listStocksInWatchlistHandler)
     .delete('/api/v0/watchlists/:watchlistId/stocks/:stockId', removeStockFromWatchlistHandler)
     .use(errorHandler)
-
-  const apiConfig = loadApiConfig()
 
   const redis = new Redis({
     port: apiConfig.REDIS_PORT,

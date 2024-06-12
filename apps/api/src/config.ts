@@ -27,6 +27,10 @@ const configSchema = yup.object().shape({
   REDIS_DB: yup.number(),
   REDIS_USERNAME: yup.string(),
   REDIS_PASSWORD: yup.string(),
+
+  // Pagination
+  PAGINATION_LIMIT: yup.number().default(10).required(),
+  PAGINATION_LIMIT_MAX: yup.number().default(100).required(),
 })
 
 // Define a type for the configuration based on the schema

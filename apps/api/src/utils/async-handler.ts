@@ -1,12 +1,9 @@
-import type { NextFunction, RequestHandler, Request, Response } from 'express'
-
-interface AsyncRequestHandler extends RequestHandler {
-  (req: Request, res: Response, next: NextFunction): Promise<void>
-}
+import type { NextFunction, RequestHandler, Response } from 'express'
+import type { AsyncRequestHandler } from '../types/express'
 
 /**
  * Wraps an async handler to catch any errors and pass them to the next middleware
- * @param fn The async function to be wrapped
+ * @param fn - The async function to be wrapped
  * @returns A RequestHandler that wraps the async function and catches any errors
  */
 export const asyncHandler =

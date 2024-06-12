@@ -24,6 +24,7 @@ const configSchema = yup.object().shape({
     .default('NOTICE')
     .required(),
   POSTGRES_INITIALIZE_TABLES: yup.boolean().default(false),
+  POSTGRES_SEED_DB: yup.boolean().default(false),
   POSTGRES_SCHEMA: yup.string(),
 })
 
