@@ -2,7 +2,7 @@ import { Sequelize, Options as SequelizeOptions } from '@sequelize/core'
 import { loadDbConfig } from './config'
 import { User, Stock, Watchlist, WatchlistStock, StockPrice } from './models'
 import { log, error as logError } from '@repo/logger'
-import { seedStocks } from './seed-db'
+import { seedStockPrices, seedStocks } from './seed-db'
 
 const config = loadDbConfig()
 
@@ -39,6 +39,7 @@ export async function connectToDatabase(): Promise<Sequelize> {
   if (process.env.NODE_ENV !== 'production' && config.POSTGRES_SEED_DB) {
     try {
       await seedStocks()
+      await seedStockPrices()
       log('Database has been seeded successfully.\n\n\n\n\n\n')
     } catch (error) {
       logError('Failed to seed the database:', error)

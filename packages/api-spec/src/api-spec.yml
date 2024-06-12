@@ -338,17 +338,27 @@ paths:
           description: The ID of the stock to retrieve price history for.
           schema:
             type: integer
+        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: '#/components/parameters/paginationPage'
       responses:
         '200':
           description: Stock price history retrieved successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StockPrice'
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponseFields'
+                  - properties:
+                      stocks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/StockPrice'
         '404':
           description: Stock not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
 
   /watchlists:
     get:

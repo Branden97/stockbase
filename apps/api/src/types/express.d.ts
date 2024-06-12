@@ -1,6 +1,7 @@
 import { type Sequelize } from '@sequelize/core'
 import type { Response, NextFunction, Request } from 'express'
 import type { Query } from 'express-serve-static-core'
+import type { ParsedQs } from 'qs'
 import type { JwtService, type JwtGeneratedPayload } from '../middlewares/auth-middleware'
 
 export interface AsyncRequestHandler<
@@ -27,7 +28,7 @@ declare global {
       tokenPayload?: JwtGeneratedPayload
       userId?: integer
       cookies?: Record<string, string>
-      query: {
+      query: ParsedQs & {
         limit: number
         page: number
       }

@@ -78,7 +78,7 @@ export async function up(queryInterface: MigrationContext): Promise<void> {
           CREATE TABLE IF NOT EXISTS "stockPrices" (
             "id" SERIAL,
             "stockId" INTEGER NOT NULL REFERENCES "stocks" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-            "price" DECIMAL(10, 2),
+            "price" DECIMAL(20, 10),
             "recordedAt" TIMESTAMP WITH TIME ZONE,
             "createdAt" TIMESTAMP(6) WITH TIME ZONE NOT NULL,
             "updatedAt" TIMESTAMP(6) WITH TIME ZONE NOT NULL,

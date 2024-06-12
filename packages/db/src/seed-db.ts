@@ -1,5 +1,5 @@
-import { CreationAttributes } from "@sequelize/core";
-import { Stock,   } from "./models";
+import { CreationAttributes, InferAttributes } from '@sequelize/core'
+import { Stock, StockPrice } from './models'
 
 const predefinedStocks = [
   { symbol: 'AAPL', companyName: 'Apple Inc.' },
@@ -30,4 +30,25 @@ export async function seedStocks() {
   }
 }
 
+// implement seedStockPrices
 
+export async function seedStockPrices() {
+  const stockPrices: Omit<InferAttributes<StockPrice>, 'id'>[] = []
+  const stocks = await Stock.findAll()
+  for (const stock of stocks) {
+    for (let i = 0; i < 100; i++) {
+      stockPrices.push({
+        stockId: stock.id,
+        price: `${Math.random() * (1000 - 0.00000001) + 0.00000001}`,
+        recordedAt: new Date(Date.now() - i * 1000),
+      })
+    }
+  }
+
+  try {
+    await StockPrice.bulkCreate(stockPrices)
+    console.log('Stock prices have been seeded successfully.')
+  } catch (error) {
+    console.error('Failed to seed stock prices:', error)
+  }
+}

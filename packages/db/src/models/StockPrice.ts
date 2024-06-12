@@ -1,16 +1,17 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes } from '@sequelize/core'
+import {
+  Model,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from '@sequelize/core'
 import {
   Attribute,
   Table,
-  Column,
-  CreatedAt,
-  UpdatedAt,
   PrimaryKey,
   AutoIncrement,
-  BelongsTo,
   NotNull,
 } from '@sequelize/core/decorators-legacy'
-import { Stock } from './Stock'
 
 @Table({
   tableName: 'stockPrices',
@@ -23,14 +24,14 @@ export class StockPrice extends Model<
   @PrimaryKey
   @AutoIncrement
   @Attribute(DataTypes.INTEGER)
-  declare id: number
+  declare id: CreationOptional<number>
 
   @NotNull
   @Attribute(DataTypes.INTEGER)
   declare stockId: number
 
-  @Attribute(DataTypes.DECIMAL(10, 2))
-  declare price: number
+  @Attribute(DataTypes.DECIMAL(20, 10))
+  declare price: string
 
   @Attribute(DataTypes.DATE)
   declare recordedAt: Date
