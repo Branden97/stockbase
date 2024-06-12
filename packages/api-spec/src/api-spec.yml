@@ -120,6 +120,7 @@ paths:
       x-eov-operation-handler: auth/logout
       security:
         - JWT_Token: []
+        - JWT_Refresh_Token: []
       responses:
         '204':
           description: Logged out successfully
