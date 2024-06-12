@@ -3,7 +3,7 @@ import type { Request, RequestHandler } from 'express'
 import { asyncHandler } from '../../utils/async-handler'
 
 // Define the type for the payload which is an array of stock IDs
-type addStocksToWatchlistPayload = number[]
+type AddStocksToWatchlistPayload = number[]
 
 // Define the type for request parameters which includes the watchlist ID
 interface Params {
@@ -19,8 +19,8 @@ interface Params {
  * @returns A JSON response indicating the success or failure of the operation.
  */
 export const addStocksToWatchlistHandler: RequestHandler = asyncHandler(
-  async (req: Request<Params, unknown, addStocksToWatchlistPayload>, res, next) => {
-    // Extract user ID from the request (assuming it's set in a middleware)
+  async (req: Request<Params, unknown, AddStocksToWatchlistPayload>, res, next) => {
+    // Extract user ID from the request
     const userId = req.userId as number | undefined
 
     // Parse the watchlist ID from the request parameters

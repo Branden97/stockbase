@@ -633,6 +633,7 @@ components:
     UpdateWatchlistRequest:
       type: object
       properties:
+        # TODO: add ordering functionality
         name:
           type: string
       required:
@@ -713,7 +714,6 @@ components:
           type: string
         userId:
           type: integer
-
 
     ##
     # Common Field Schemas
