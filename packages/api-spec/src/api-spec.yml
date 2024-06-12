@@ -173,16 +173,24 @@ paths:
                 $ref: '#/components/schemas/User'
 
         '403':
-          description: Unauthorized
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
         '404':
           description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
     patch:
       tags:
         - users
@@ -222,7 +230,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
     delete:
       tags:
         - users
@@ -260,7 +268,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
   /stocks:
     get:
       tags:
@@ -370,7 +378,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
     post:
       tags:
         - watchlists
@@ -449,7 +457,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
     delete:
       tags:
         - watchlists
@@ -481,7 +489,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
     patch:
       tags:
         - watchlists
@@ -519,7 +527,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
   /watchlists/{watchlistId}/stocks:
     post:
       tags:
@@ -574,7 +582,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
     get:
       tags:
         - watchlists
@@ -618,7 +626,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
     delete:
       tags:
         - watchlists
@@ -656,7 +664,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
   /watchlists/{watchlistId}/stocks/{stockId}:
     delete:
       tags:
@@ -691,7 +699,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-                
+
 components:
   securitySchemes:
     JWT_Token:
@@ -759,7 +767,6 @@ components:
             - not:
                 required: ['newPassword']
             - required: ['oldPassword']
-
 
     LoginRequest:
       type: object

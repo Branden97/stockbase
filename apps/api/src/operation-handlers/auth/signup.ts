@@ -12,13 +12,6 @@ interface SignupBody {
   password: string
 }
 
-class ExistingUser extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'ExistingUser'
-  }
-}
-
 // Signup handler
 export const signupHandler: RequestHandler = asyncHandler(
   async (req: Request<unknown, unknown, SignupBody>, res: Response) => {
@@ -27,23 +20,25 @@ export const signupHandler: RequestHandler = asyncHandler(
       const { username, email, password, firstName, lastName } = req.body
 
       // Check for existing username or email
-      const existingUser = await User.findOne({ where: { username } })
+      const existingUser = await User.findOne({ where: { username }, paranoid: false })
       if (existingUser) {
-        throw new ExistingUser('Username already exists')
+        res.status(409).json({ message: 'Username already exists' })
+        return
       }
-      const existingUserByEmail = await User.findOne({ where: { email } })
+      const existingUserByEmail = await User.findOne({ where: { email }, paranoid: false })
       if (existingUserByEmail) {
-        throw new ExistingUser('Email already exists')
+        res.status(409).json({ message: 'Email already exists' })
+        return
       }
 
       // Create new user instance
-      const newUser =   User.build({
+      const newUser = User.build({
         username,
         firstName,
         lastName,
         email,
       })
-      
+
       await newUser.setPassword(password)
       await newUser.save()
 
@@ -56,9 +51,7 @@ export const signupHandler: RequestHandler = asyncHandler(
 
 // Error handler function
 const handleError = (err: unknown, res: Response) => {
-  if (err instanceof ExistingUser) {
-    res.status(409).json({ message: err.message })
-  } else if (err instanceof SequelizeValidationError) {
+  if (err instanceof SequelizeValidationError) {
     res.status(400).json({ message: 'Validation error', errors: err.errors })
   } else if (err instanceof UniqueConstraintError) {
     res.status(409).json({ message: 'Username or email already exists' })
