@@ -469,10 +469,6 @@ paths:
       responses:
         '201':
           description: Stock added to watchlist successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WatchlistStock'
         '404':
           description: Watchlist or stock not found
 
@@ -492,17 +488,27 @@ paths:
           description: The ID of the watchlist to retrieve stocks from.
           schema:
             type: integer
+        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: '#/components/parameters/paginationPage'
       responses:
         '200':
           description: List of stocks in watchlist retrieved successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/WatchlistStock'
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponseFields'
+                  - properties:
+                      stocks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Stock'
         '404':
           description: Watchlist not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
 
   /watchlists/{watchlistId}/stocks/{stockId}:
     delete:
@@ -750,7 +756,7 @@ components:
       required: false
       schema:
         type: integer
-        minimum: 10
+        minimum: 1
         maximum: 100
         default: 10
     paginationPage:
