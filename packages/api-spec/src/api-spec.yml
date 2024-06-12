@@ -360,7 +360,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Watchlist'
+                # This wasn't letting the stocks array come through...
+                # allOf:
+                #   - $ref: '#/components/schemas/Watchlist'
+                #   - type: object
+                #     properties:
+                #       stocks:
+                #         type: array
+                #         items:
+                #           $ref: '#/components/schemas/Stock'
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  stocks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Stock'
 
   /watchlists/{watchlistId}:
     get:
@@ -662,6 +680,10 @@ components:
       properties:
         name:
           type: string
+        stockIds:
+          type: array
+          items:
+            type: integer
       required:
         - name
 
@@ -747,8 +769,6 @@ components:
           type: integer
         name:
           type: string
-        userId:
-          type: integer
 
     ##
     # Common Field Schemas

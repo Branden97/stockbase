@@ -28,7 +28,7 @@ export class Watchlist extends Model<
   @PrimaryKey
   @AutoIncrement
   @Attribute(DataTypes.INTEGER)
-  declare id: number
+  declare id: CreationOptional<number>
 
   @Attribute(DataTypes.STRING(100))
   declare name: string
