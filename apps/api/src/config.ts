@@ -15,9 +15,9 @@ const configSchema = yup.object().shape({
   
   JWT_SECRET: yup.string().min(64).required(),
   JWT_COOKIE_NAME: yup.string().default('token').required(),
-  JWT_TTL_SECS: yup.number().min(64).required(),
+  JWT_TTL_SECS: yup.number().required(),
   REFRESH_JWT_COOKIE_NAME: yup.string().default('refreshToken').required(),
-  REFRESH_JWT_TTL_SECS: yup.number().min(64).required(),
+  REFRESH_JWT_TTL_SECS: yup.number().required(),
   JWT_COOKIE_DOMAIN: yup.string().default('localhost').required(),
   JWT_COOKIE_SECURE: yup.boolean().default(true).required(),
 

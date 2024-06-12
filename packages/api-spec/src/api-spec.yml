@@ -73,6 +73,10 @@ paths:
       responses:
         '200':
           description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshTokenResponse'
         '401':
           description: Unauthenticated
       operationId: refreshToken
@@ -616,6 +620,9 @@ components:
           type: number
         exp:
           type: number
+
+    RefreshTokenResponse:
+      $ref: '#/components/schemas/LoginResponse'
 
     SimpleErrorResponse:
       type: object
