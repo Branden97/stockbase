@@ -15,7 +15,7 @@ interface Params {
 
 /**
  * Handles the request to update a watchlist's name
- * 
+ *
  * @param req - The request object containing parameters, body, and other data.
  * @param res - The response object to send back the desired HTTP response.
  * @param next - The next function to pass control to the next middleware.
@@ -23,7 +23,7 @@ interface Params {
  */
 export const updateWatchlistHandler: RequestHandler = asyncHandler(
   async (req: Request<Params, unknown, UpdateWatchlistHandlerPayload>, res, next) => {
-    // Extract user ID from the request (assuming it's set in a middleware)
+    // Extract user ID from the request
     const userId = req.userId as number | undefined
 
     // Parse the watchlist ID from the request parameters

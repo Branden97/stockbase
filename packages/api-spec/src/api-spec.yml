@@ -410,6 +410,10 @@ paths:
           description: Watchlist deleted successfully
         '404':
           description: Watchlist not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
 
     patch:
       tags:
