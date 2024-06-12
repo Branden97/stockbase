@@ -13,6 +13,8 @@ import {
   HasMany,
   BeforeValidate,
   BeforeSave,
+  PrimaryKey,
+  AutoIncrement,
 } from '@sequelize/core/decorators-legacy'
 import bcrypt from 'bcrypt'
 import { Watchlist } from './Watchlist'
@@ -23,6 +25,12 @@ import { Watchlist } from './Watchlist'
   paranoid: true,
 })
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  @NotNull
+  @PrimaryKey
+  @AutoIncrement
+  @Attribute(DataTypes.INTEGER)
+  declare id: CreationOptional<number>
+
   @Unique
   @NotNull
   @Attribute(DataTypes.STRING(50))
@@ -58,5 +66,9 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
       instance.passwordHash = await bcrypt.hash(instance.newPassword, 10)
       instance.newPassword = undefined
     }
+  }
+
+  checkPassword(plainTextPassword: string): Promise<boolean> {
+    return bcrypt.compare(plainTextPassword, this.passwordHash)
   }
 }

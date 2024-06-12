@@ -15,9 +15,9 @@ import { loadApiConfig } from '../../config'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 // jest.mock('node-fetch', () => require('fetch-mock-jest').sandbox())
 
-const apiConfig = loadApiConfig() 
+const apiConfig = loadApiConfig()
 const exampleCreationPayload: JwtCreationPayload = {
-  userId: 'myUserId',
+  userId: 1,
 }
 const exampleGeneratedPayload: JwtGeneratedPayload = {
   ...exampleCreationPayload,
@@ -36,20 +36,20 @@ const exampleRefreshPayload: JwtGeneratedPayload = {
 const blackListedFamily = `blackListedFamily`
 const legitFamily = `legitFamily`
 const { token: legitToken, refreshToken: legitRefreshToken } = JwtService.createTokenPair({
-  userId: 'asdf',
+  userId: 1,
 })
 console.log(apiConfig)
-const blacklistedTokenPair = JwtService.createTokenPair({ userId: 'asdf' })
-const blacklistedFamilyTokenPair = JwtService.createTokenPair({ userId: 'asdf' }, blackListedFamily)
+const blacklistedTokenPair = JwtService.createTokenPair({ userId: 1 })
+const blacklistedFamilyTokenPair = JwtService.createTokenPair({ userId: 1 }, blackListedFamily)
 
 describe('createTokenPair()', () => {
   it('should return the tokens as strings', () => {
-    const { token, refreshToken } = JwtService.createTokenPair({ userId: '' })
+    const { token, refreshToken } = JwtService.createTokenPair({ userId: 1 })
     expect(typeof token).toBe('string')
     expect(typeof refreshToken).toBe('string')
   })
   it('should include fam, gen, and userId in the payload', () => {
-    const { token, refreshToken } = JwtService.createTokenPair({ userId: 'asdf' })
+    const { token, refreshToken } = JwtService.createTokenPair({ userId: 1 })
     const payload = jwt.decode(token, { json: true }) as JwtGeneratedPayload
     const refreshPayload = jwt.decode(refreshToken, {
       json: true,
@@ -61,7 +61,7 @@ describe('createTokenPair()', () => {
     expect(typeof refreshPayload.gen).toBe('number')
   })
   it('should set the expiration correctly', () => {
-    const { token, refreshToken } = JwtService.createTokenPair({ userId: 'asdf' })
+    const { token, refreshToken } = JwtService.createTokenPair({ userId: 1 })
     const payload = jwt.decode(token, { json: true }) as JwtGeneratedPayload
     const refreshPayload = jwt.decode(refreshToken, {
       json: true,
@@ -339,7 +339,7 @@ describe('JwtService', () => {
     it('should return false, given a valid, expired token', async () => {
       const mockBlacklistFamily = jest.fn()
 
-      const token = jwt.sign({ userId: 'asdf', fam: 'asdf', gen: 0, exp: 0 }, apiConfig.JWT_SECRET)
+      const token = jwt.sign({ userId: 1, fam: 'asdf', gen: 0, exp: 0 }, apiConfig.JWT_SECRET)
 
       const result = await JwtService.jwtSecurityHandler(
         {
@@ -399,7 +399,7 @@ describe('JwtService', () => {
       const mockBlacklistFamily = jest.fn()
       const { token: legitToken } = JwtService.createTokenPair(
         {
-          userId: 'asdf',
+          userId: 1,
         },
         'fam',
         0
@@ -426,7 +426,7 @@ describe('JwtService', () => {
       const mockBlacklistFamily = jest.fn()
       const { token: legitToken } = JwtService.createTokenPair(
         {
-          userId: 'asdf',
+          userId: 1,
         },
         'fam',
         1
@@ -452,7 +452,7 @@ describe('JwtService', () => {
     it('should return false, given a token with blacklisted token or family', async () => {
       const { token: legitToken } = JwtService.createTokenPair(
         {
-          userId: 'asdf',
+          userId: 1,
         },
         'fam',
         0
@@ -510,7 +510,7 @@ describe('JwtService', () => {
       const mockBlacklistFamily = jest.fn()
 
       const refreshToken = jwt.sign(
-        { userId: 'asdf', fam: 'asdf', gen: 0, exp: 0 },
+        { userId: 1, fam: 'asdf', gen: 0, exp: 0 },
         apiConfig.JWT_SECRET
       )
 
@@ -572,7 +572,7 @@ describe('JwtService', () => {
       const mockBlacklistFamily = jest.fn()
       const { refreshToken } = JwtService.createTokenPair(
         {
-          userId: 'asdf',
+          userId: 1,
         },
         'fam',
         0
@@ -599,7 +599,7 @@ describe('JwtService', () => {
       const mockBlacklistFamily = jest.fn()
       const { refreshToken } = JwtService.createTokenPair(
         {
-          userId: 'asdf',
+          userId: 1,
         },
         'fam',
         1
@@ -625,7 +625,7 @@ describe('JwtService', () => {
     it('should return false, given a refreshToken with blacklisted token or family', async () => {
       const { refreshToken } = JwtService.createTokenPair(
         {
-          userId: 'asdf',
+          userId: 1,
         },
         'fam',
         0

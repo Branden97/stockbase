@@ -10,7 +10,7 @@ const apiConfig = loadApiConfig()
 
 type SecurityHandler = SecurityHandlers[string]
 export interface JwtCreationPayload {
-  userId: string
+  userId: number
 }
 export interface JwtGeneratedPayload extends JwtPayload, JwtCreationPayload {
   fam: string
@@ -162,7 +162,12 @@ export class JwtService {
   static _createJwtSecurityHandler(tokenName: string, isRefreshToken: boolean): SecurityHandler {
     const securityHandler: SecurityHandler = async (req, _, __): Promise<boolean> => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- It might be undefined if mocked incorrectly
-      if (req.app.jwtService === undefined) throw new Error('JWT service not attached to app! Did you mock it correctly?')
+      if (req.app.jwtService === undefined)
+        throw new Error(
+          'JWT service not attached to app!' + process.env.NODE_ENV === 'test'
+            ? ' Did you mock it correctly?'
+            : ''
+        )
       const tokenString = req.cookies?.[tokenName] as string | undefined
       if (!tokenString || typeof tokenString !== `string`) {
         warn(`"${tokenName}" missing from cookies!`)
@@ -255,11 +260,11 @@ export class JwtService {
     try {
       JwtService._extractJwtTokenFromCookie(req, 'token', (tokenPayload) => {
         req.tokenPayload = tokenPayload
-        if ('userId' in tokenPayload) req.userId = parseInt(tokenPayload.userId)
+        if ('userId' in tokenPayload) req.userId = tokenPayload.userId
       })
       JwtService._extractJwtTokenFromCookie(req, 'refreshToken', (tokenPayload) => {
         req.refreshTokenPayload = tokenPayload
-        if ('userId' in tokenPayload) req.userId = parseInt(tokenPayload.userId)
+        if ('userId' in tokenPayload) req.userId = tokenPayload.userId
       })
     } catch (_err) {
       // pass

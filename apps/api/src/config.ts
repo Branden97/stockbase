@@ -18,6 +18,8 @@ const configSchema = yup.object().shape({
   JWT_TTL_SECS: yup.number().min(64).required(),
   REFRESH_JWT_COOKIE_NAME: yup.string().default('refreshToken').required(),
   REFRESH_JWT_TTL_SECS: yup.number().min(64).required(),
+  JWT_COOKIE_DOMAIN: yup.string().default('localhost').required(),
+  JWT_COOKIE_SECURE: yup.boolean().default(true).required(),
 
   // Redis connection details
   REDIS_HOST: yup.string().default('localhost').required(),

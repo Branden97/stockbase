@@ -105,6 +105,10 @@ paths:
                 $ref: '#/components/schemas/LoginResponse'
         '401':
           description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
 
   /logout:
     get:
@@ -603,16 +607,21 @@ components:
 
     LoginResponse:
       type: object
+      additionalProperties: false
       properties:
-        token:
-          type: string
+        userId:
+          type: number
+        iat:
+          type: number
+        exp:
+          type: number
 
     SimpleErrorResponse:
       type: object
       properties:
         message:
           type: string
-    
+
     ##
     # Model Schemas
     ##

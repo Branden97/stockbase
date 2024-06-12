@@ -9,7 +9,7 @@ const apiPrefix = '/api/v0'
 // const VALID_REFRESH_TOKEN = 'asdf'
 
 const { token: VALID_TOKEN, refreshToken: VALID_REFRESH_TOKEN } = JwtService.createTokenPair({
-  userId: 'asdf',
+  userId: 1,
 })
 
 describe('API Server', () => {

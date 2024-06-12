@@ -1,7 +1,7 @@
-import { RequestHandler } from 'express'
+import type { NextFunction, RequestHandler, Request, Response } from 'express'
 
 interface AsyncRequestHandler extends RequestHandler {
-  (req: any, res: any, next: any): Promise<void>
+  (req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 /**
