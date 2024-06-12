@@ -243,9 +243,17 @@ paths:
         '204':
           description: User deleted successfully
         '403':
-          description: Unauthorized
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
         '404':
           description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
         '401':
           description: Unauthorized
           content:
