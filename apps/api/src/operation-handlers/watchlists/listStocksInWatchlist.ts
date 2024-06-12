@@ -1,7 +1,7 @@
 import { Stock, Watchlist, WatchlistStock } from '@repo/db'
 import type { RequestHandler } from 'express'
 import { asyncHandler } from '../../utils/async-handler'
-import { getPaginationMeta } from '../../utils/pagination-utils'
+import { getPaginationMeta } from '../../middlewares/pagination-middleware'
 
 export const listStocksInWatchlistHandler: RequestHandler = asyncHandler(async (req, res, next) => {
   const limit = req.query.limit as number

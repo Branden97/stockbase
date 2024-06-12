@@ -31,6 +31,7 @@ declare global {
         limit: number
         page: number
       }
+      skip: number
     }
     interface Application {
       db: Sequelize

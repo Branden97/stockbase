@@ -65,7 +65,7 @@ importers:
         version: link:../../packages/logger
       '@sequelize/core':
         specifier: 7.0.0-alpha.37
-        version: 7.0.0-alpha.37(pg@8.12.0)
+        version: 7.0.0-alpha.37
       body-parser:
         specifier: ^1.20.2
         version: 1.20.2
@@ -84,9 +84,6 @@ importers:
       express-openapi-validator:
         specifier: ^5.2.0
         version: 5.2.0(express@4.19.2)
-      express-paginate:
-        specifier: ^1.0.2
-        version: 1.0.2
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
@@ -133,9 +130,6 @@ importers:
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
-      '@types/express-paginate':
-        specifier: ^1.0.4
-        version: 1.0.4
       '@types/ioredis-mock':
         specifier: ^8.2.5
         version: 8.2.5
@@ -1943,9 +1937,6 @@ packages:
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
 
-  '@types/express-paginate@1.0.4':
-    resolution: {integrity: sha512-BisaFWkT+m7OSggaUpqwlsH0LpgWU8ApsYR7RDcN12SGYkN4o5p/b9Qu+VmZeVMIImVtV29abqi/qz8QYAt6ww==}
-
   '@types/express-serve-static-core@4.17.41':
     resolution: {integrity: sha512-OaJ7XLaelTgrvlZD8/aa0vvvxZdUmlCn6MtWeB7TkiKW70BQLc9XEPpDLPdbo52ZhXUCrznlWdCHWxJWtdyajA==}
 
@@ -3392,9 +3383,6 @@ packages:
     peerDependencies:
       express: '*'
 
-  express-paginate@1.0.2:
-    resolution: {integrity: sha512-z0VTaLrsMe4PJFifjJCC4Q11cwrveSOejicYOgFi6RzqUMPd8kIlK95x/xq6g6k6urCI2Fd3gadj3AZ9AGqguw==}
-
   express@4.19.2:
     resolution: {integrity: sha512-5T6nhjsT+EOMzuck8JjBHARTHfMht0POzlA60WV2pMD3gyXw2LZnZ+ueGdNxG+0calOJcWKbpFcuzLZ91YWq9Q==}
     engines: {node: '>= 0.10.0'}
@@ -4323,14 +4311,8 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
-  lodash.assign@4.2.0:
-    resolution: {integrity: sha512-hFuH8TY+Yji7Eja3mGiuAxBqLagejScbG8GbG0j6o9vzn0YL14My+ktnqtZgFTosKymC9/44wP6s7xyuLfnClw==}
-
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
-
-  lodash.clone@4.5.0:
-    resolution: {integrity: sha512-GhrVeweiTD6uTmmn5hV/lzgCQhccwReIVRLHp7LT4SopOjqEZ5BbX8b5WWEtAKasjmy8hR7ZPwsYlxRCku5odg==}
 
   lodash.clonedeep@4.5.0:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
@@ -4358,9 +4340,6 @@ packages:
 
   lodash.isnumber@3.0.3:
     resolution: {integrity: sha512-QYqzpfwO3/CWf3XP+Z+tkQsfaLL/EnUlXWVkIk5FUPc4sBdTehEqZONuyRt2P67PXAk+NXmTBcc97zw9t1FQrw==}
-
-  lodash.isobject@3.0.2:
-    resolution: {integrity: sha512-3/Qptq2vr7WeJbB4KHUSKlq8Pl7ASXi3UG6CMbBm8WRtXi8+GHm7mKaU3urfpSEzWe2wCIChs6/sdocUsTKJiA==}
 
   lodash.isplainobject@4.0.6:
     resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
@@ -8029,6 +8008,30 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
+  '@sequelize/core@7.0.0-alpha.37':
+    dependencies:
+      '@types/debug': 4.1.12
+      '@types/validator': 13.11.10
+      bnf-parser: 3.1.6
+      dayjs: 1.11.11
+      debug: 4.3.5
+      dottie: 2.0.6
+      fast-glob: 3.3.2
+      inflection: 3.0.0
+      lodash: 4.17.21
+      pg-connection-string: 2.6.4
+      pg-hstore: 2.3.4
+      retry-as-promised: 7.0.4
+      semver: 7.6.2
+      sequelize-pool: 8.0.0
+      toposort-class: 1.0.1
+      type-fest: 3.13.1
+      uuid: 9.0.1
+      validator: 13.12.0
+      wkx: 0.5.0
+    transitivePeerDependencies:
+      - supports-color
+
   '@sequelize/core@7.0.0-alpha.37(pg@8.12.0)':
     dependencies:
       '@types/debug': 4.1.12
@@ -8186,10 +8189,6 @@ snapshots:
       '@types/estree': 1.0.5
 
   '@types/estree@1.0.5': {}
-
-  '@types/express-paginate@1.0.4':
-    dependencies:
-      '@types/express': 4.17.21
 
   '@types/express-serve-static-core@4.17.41':
     dependencies:
@@ -10015,13 +10014,6 @@ snapshots:
       ono: 7.1.3
       path-to-regexp: 6.2.2
 
-  express-paginate@1.0.2:
-    dependencies:
-      lodash.assign: 4.2.0
-      lodash.clone: 4.5.0
-      lodash.isobject: 3.0.2
-      qs: 6.11.2
-
   express@4.19.2:
     dependencies:
       accepts: 1.3.8
@@ -11291,11 +11283,7 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
-  lodash.assign@4.2.0: {}
-
   lodash.camelcase@4.3.0: {}
-
-  lodash.clone@4.5.0: {}
 
   lodash.clonedeep@4.5.0: {}
 
@@ -11314,8 +11302,6 @@ snapshots:
   lodash.isinteger@4.0.4: {}
 
   lodash.isnumber@3.0.3: {}
-
-  lodash.isobject@3.0.2: {}
 
   lodash.isplainobject@4.0.6: {}
 
