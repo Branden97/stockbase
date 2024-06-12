@@ -248,7 +248,7 @@ paths:
         - $ref: '#/components/parameters/paginationPage'
       responses:
         '200':
-          description: List of stocks retrieved successfully
+          description: List of stocks retrieved successfully (including pagination)
           content:
             application/json:
               schema:
@@ -322,15 +322,22 @@ paths:
       x-eov-operation-handler: watchlists/listWatchlists
       security:
         - JWT_Token: []
+      parameters:
+        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: '#/components/parameters/paginationPage'
       responses:
         '200':
-          description: List of watchlists retrieved successfully
+          description: List of watchlists retrieved successfully (including pagination)
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Watchlist'
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponseFields'
+                  - properties:
+                      watchlists:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Watchlist'
 
     post:
       tags:
@@ -652,7 +659,6 @@ components:
         email:
           $ref: '#/components/schemas/EmailField'
 
-
     Stock:
       type: object
       additionalProperties: false
@@ -663,7 +669,6 @@ components:
           type: string
         companyName:
           type: string
-
 
     StockPrice:
       type: object
@@ -680,7 +685,6 @@ components:
           type: string
           format: date-time
 
-
     Watchlist:
       type: object
       additionalProperties: false
@@ -692,7 +696,6 @@ components:
         userId:
           type: integer
 
-
     WatchlistStock:
       type: object
       additionalProperties: false
@@ -703,7 +706,6 @@ components:
           type: integer
         stockId:
           type: integer
-
 
     ##
     # Common Field Schemas
@@ -720,7 +722,6 @@ components:
     UsernameField:
       type: string
       minLength: 3
-
 
     ##
     # Common Pagination Schemas
