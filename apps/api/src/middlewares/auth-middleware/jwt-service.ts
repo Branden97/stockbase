@@ -2,11 +2,19 @@ import { type Redis } from 'ioredis'
 import { sign, decode, verify, type JwtPayload } from 'jsonwebtoken'
 import type { SecurityHandlers } from 'express-openapi-validator/dist/framework/types'
 import { v4 as uuidv4 } from 'uuid'
-import { warn, error } from '@repo/logger'
+import { log, warn, error } from '@repo/logger'
 import type { RequestHandler, Request } from 'express'
 import { loadApiConfig } from '../../config'
 
 const apiConfig = loadApiConfig()
+
+// custom error for telling the user that they were logged out from all devices
+class LoggedOutFromAllDevicesError extends Error {
+  constructor() {
+    super('You were logged out from all devices.')
+    this.name = 'LoggedOutError'
+  }
+}
 
 type SecurityHandler = SecurityHandlers[string]
 export interface JwtCreationPayload {
@@ -27,6 +35,7 @@ export class JwtService {
     FAMILY_BLACKLIST: 'tokenFamilyBlacklist',
     TOKEN_BLACKLIST: 'tokenBlacklist',
     FAMILY_GENERATIONS: 'familyGenerations',
+    LOGOUT_ALL_TOKENS_ISSUED_BEFORE_TIMESTAMP: 'logoutAllTokensIssuedBeforeTimestamp',
   }
   constructor(redis: Redis) {
     this.redis = redis
@@ -113,6 +122,57 @@ export class JwtService {
   }
 
   /**
+   * Invalidates all tokens for a given user. It does this by setting a timestamp in Redis that
+   * is used to check if a token was issued before the user logged out of all devices.
+   * @param userId - The ID of the user.
+   * @returns A Promise that resolves when all tokens are invalidated.
+   */
+  async logoutAllDevices(userId: number): Promise<void> {
+    try {
+      const timestamp = Math.floor(Date.now() / 1000)
+      await this.redis.set(
+        `${JwtService.REDIS_KEYS.LOGOUT_ALL_TOKENS_ISSUED_BEFORE_TIMESTAMP}:${userId}`,
+        timestamp
+      )
+    } catch (e) {
+      error('There was an error invalidating all tokens:', e)
+    }
+  }
+
+  /**
+   * Checks if a token was issued before the user last logged out from all sessions.
+   * @param tokenPayload - The payload of the JWT token.
+   * @param userId - The ID of the user.
+   * @returns A Promise that resolves to a boolean indicating whether the token was issued before the user logged out.
+   */
+  async isTokenIssuedBeforeUserLoggedOutAll(
+    tokenPayload: JwtGeneratedPayload,
+    userId: number
+  ): Promise<boolean> {
+    try {
+      const lastedLoggedOutAllTimestamp = await this.redis.get(
+        `${JwtService.REDIS_KEYS.LOGOUT_ALL_TOKENS_ISSUED_BEFORE_TIMESTAMP}:${userId}`
+      )
+      if (lastedLoggedOutAllTimestamp === null) return false
+      if (tokenPayload.iat === undefined) return true
+      log(
+        '\n\n\n\n',
+        {
+          thisTokenWasIssuedBeforeInvalidation:
+            tokenPayload.iat < parseInt(lastedLoggedOutAllTimestamp),
+          tokenPayload,
+          lastedLoggedOutAllTimestamp,
+        },
+        '\n\n\n\n'
+      )
+      return tokenPayload.iat < parseInt(lastedLoggedOutAllTimestamp)
+    } catch (e) {
+      error('There was an error checking if a token is issued before invalidation:', e)
+      return true
+    }
+  }
+
+  /**
    * Creating / Refreshing JWT pairs
    */
   static createTokenPair(payload: JwtCreationPayload, fam: string = uuidv4(), gen = 0): TokenPair {
@@ -164,9 +224,9 @@ export class JwtService {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- It might be undefined if mocked incorrectly
       if (req.app.jwtService === undefined)
         throw new Error(
-          'JWT service not attached to app!' + process.env.NODE_ENV === 'test'
-            ? ' Did you mock it correctly?'
-            : ''
+          `JWT service not attached to app! ${
+            process.env.NODE_ENV === 'test' ? ' Did you mock it correctly?' : ''
+          }`
         )
       const tokenString = req.cookies?.[tokenName] as string | undefined
       if (!tokenString || typeof tokenString !== `string`) {
@@ -180,17 +240,16 @@ export class JwtService {
           complete: true,
         })
 
-        const alreadyParsedToken = isRefreshToken ? req.refreshTokenPayload : req.tokenPayload
-        if (alreadyParsedToken) {
-          gen = alreadyParsedToken.gen
-          fam = alreadyParsedToken.fam
-        } else {
-          warn(`"${tokenName}" wasn't parsed?!`)
-          const decodedToken = decode(tokenString, { json: true }) as JwtGeneratedPayload | null
-          if (decodedToken === null) return false
-          gen = decodedToken.gen
-          fam = decodedToken.fam
+        let decodedToken = isRefreshToken ? req.refreshTokenPayload : req.tokenPayload
+        if (decodedToken === undefined) {
+          error(`"${tokenName}" wasn't parsed?!`)
+          decodedToken =
+            (decode(tokenString, { json: true }) as JwtGeneratedPayload | null) || undefined
+          if (decodedToken === undefined) return false
         }
+        gen = decodedToken.gen
+        fam = decodedToken.fam
+
         if (await req.app.jwtService._isTokenBlacklisted(tokenString)) {
           warn(`blacklisted token used!`)
           return false
@@ -205,9 +264,25 @@ export class JwtService {
           throw new Error(
             `"${tokenName}" gen mismatch! lastGen: ${lastGen}, gen: ${gen}, (lastGen || 0) < gen: ${(lastGen || 0) < gen}`
           )
+        // Check if the token was issued before the user logged out of all devices
+        if (
+          await req.app.jwtService.isTokenIssuedBeforeUserLoggedOutAll(
+            decodedToken,
+            decodedToken.userId
+          )
+        ) {
+          log(`"${tokenName}" was issued before user logged out of all devices!`)
+          throw new LoggedOutFromAllDevicesError()
+          return false
+        }
 
         return true
       } catch (err) {
+        // TODO: make this error bubble-up and send a user-friendly msg that they've been logged out from elsewhere
+        if (err instanceof LoggedOutFromAllDevicesError) {
+          throw LoggedOutFromAllDevicesError
+        }
+
         warn(`A "${tokenName}" token has failed signature verification!`, err)
         if (fam) await req.app.jwtService.blacklistFamily(fam)
         return false
