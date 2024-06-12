@@ -1,4 +1,4 @@
-import { Stock, Watchlist, WatchlistStock } from '@repo/db'
+import { Stock, User, Watchlist, WatchlistStock } from '@repo/db'
 import type { Request, RequestHandler } from 'express'
 import { asyncHandler } from '../../utils/async-handler'
 
@@ -29,6 +29,10 @@ export const createWatchlistHandler: RequestHandler = asyncHandler(
     const userId = req.userId as number | undefined
     if (userId === undefined) {
       res.status(401).json({ message: 'Unauthorized' })
+      return
+    }
+    if (!(await User.findByPk(userId))) {
+      res.status(401).json({ message: 'User not found' })
       return
     }
 

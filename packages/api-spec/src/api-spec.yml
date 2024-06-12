@@ -176,7 +176,13 @@ paths:
           description: Unauthorized
         '404':
           description: User not found
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
     patch:
       tags:
         - users
@@ -210,7 +216,13 @@ paths:
           description: Unauthorized
         '404':
           description: User not found
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
     delete:
       tags:
         - users
@@ -234,7 +246,13 @@ paths:
           description: Unauthorized
         '404':
           description: User not found
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
   /stocks:
     get:
       tags:
@@ -338,7 +356,13 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/Watchlist'
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
     post:
       tags:
         - watchlists
@@ -379,7 +403,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Stock'
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
   /watchlists/{watchlistId}:
     get:
       tags:
@@ -406,7 +435,13 @@ paths:
                 $ref: '#/components/schemas/Watchlist'
         '404':
           description: Watchlist not found
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
     delete:
       tags:
         - watchlists
@@ -432,7 +467,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
     patch:
       tags:
         - watchlists
@@ -464,7 +505,13 @@ paths:
                 $ref: '#/components/schemas/Watchlist'
         '404':
           description: Watchlist not found
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
   /watchlists/{watchlistId}/stocks:
     post:
       tags:
@@ -513,7 +560,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
     get:
       tags:
         - watchlists
@@ -551,7 +604,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
     delete:
       tags:
         - watchlists
@@ -583,6 +642,13 @@ paths:
           description: Stock(s) removed from watchlist successfully
         '404':
           description: Watchlist or stock not found
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
   /watchlists/{watchlistId}/stocks/{stockId}:
     delete:
       tags:
@@ -611,7 +677,13 @@ paths:
           description: Stock removed from watchlist successfully
         '404':
           description: Watchlist or stock not found
-
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+                
 components:
   securitySchemes:
     JWT_Token:
@@ -658,11 +730,28 @@ components:
       properties:
         username:
           type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
         email:
           $ref: '#/components/schemas/EmailField'
-      required:
-        - username
-        - email
+        oldPassword:
+          $ref: '#/components/schemas/PasswordField'
+        newPassword:
+          $ref: '#/components/schemas/PasswordField'
+      anyOf:
+        - required: ['username']
+        - required: ['firstName']
+        - required: ['lastName']
+        - required: ['email']
+        - required: ['newPassword']
+      allOf:
+        - oneOf:
+            - not:
+                required: ['newPassword']
+            - required: ['oldPassword']
+
 
     LoginRequest:
       type: object

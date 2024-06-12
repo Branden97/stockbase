@@ -42,6 +42,14 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare email: string
 
   @NotNull
+  @Attribute(DataTypes.STRING(100))
+  declare firstName: string
+
+  @NotNull
+  @Attribute(DataTypes.STRING(100))
+  declare lastName: string
+
+  @NotNull
   @Attribute(DataTypes.STRING(255))
   declare passwordHash: CreationOptional<string>
 
@@ -50,22 +58,9 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   // New-password field for plaintext password
   public newPassword?: string = undefined
-
-  // set newPassword upon instance creation
-  constructor(values?: InferCreationAttributes<User>) {
-    super(values)
-    this.newPassword = values?.newPassword
-  }
-
-  // TODO: method for comparing plaintext password with hashed password
-
-  @BeforeSave
-  @BeforeValidate
-  static async hashPassword(instance: User) {
-    if (instance.newPassword) {
-      instance.passwordHash = await bcrypt.hash(instance.newPassword, 10)
-      instance.newPassword = undefined
-    }
+ 
+  async setPassword(newPassword: string): Promise<void> {
+      this.passwordHash = await bcrypt.hash(newPassword, 10)
   }
 
   checkPassword(plainTextPassword: string): Promise<boolean> {

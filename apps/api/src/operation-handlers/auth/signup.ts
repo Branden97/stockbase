@@ -6,6 +6,8 @@ import { asyncHandler } from '../../utils/async-handler'
 
 interface SignupBody {
   username: string
+  firstName: string
+  lastName: string
   email: string
   password: string
 }
@@ -22,7 +24,7 @@ export const signupHandler: RequestHandler = asyncHandler(
   async (req: Request<unknown, unknown, SignupBody>, res: Response) => {
     try {
       // TODO: Generate types from OpenAPI schema
-      const { username, email, password } = req.body
+      const { username, email, password, firstName, lastName } = req.body
 
       // Check for existing username or email
       const existingUser = await User.findOne({ where: { username } })
@@ -35,11 +37,15 @@ export const signupHandler: RequestHandler = asyncHandler(
       }
 
       // Create new user instance
-      const newUser = await User.create({
+      const newUser =   User.build({
         username,
+        firstName,
+        lastName,
         email,
-        newPassword: password,
       })
+      
+      await newUser.setPassword(password)
+      await newUser.save()
 
       res.status(201).json(newUser.toJSON())
     } catch (err: unknown) {
