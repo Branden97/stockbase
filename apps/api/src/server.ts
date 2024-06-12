@@ -27,6 +27,7 @@ import {
   logoutHandler,
   refreshTokenHandler,
   removeStockFromWatchlistHandler,
+  removeStocksFromWatchlistHandler,
   signupHandler,
   updateUserHandler,
   updateWatchlistHandler,
@@ -105,9 +106,10 @@ export const createServer = async (): Promise<Express> => {
     .delete('/api/v0/watchlists/:watchlistId', deleteWatchlistHandler)
     .post('/api/v0/watchlists/:watchlistId/stocks', addStocksToWatchlistHandler)
     .get('/api/v0/watchlists/:watchlistId/stocks', listStocksInWatchlistHandler)
+    .delete('/api/v0/watchlists/:watchlistId/stocks', removeStocksFromWatchlistHandler)
     .delete('/api/v0/watchlists/:watchlistId/stocks/:stockId', removeStockFromWatchlistHandler)
     .use(errorHandler)
-
+  
   const redis = new Redis({
     port: apiConfig.REDIS_PORT,
     host: apiConfig.REDIS_HOST,

@@ -534,6 +534,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/SimpleErrorResponse'
 
+    delete:
+      tags:
+        - watchlists
+      summary: Remove multiple stocks from watchlist
+      description: Removes multiple stocks from a specific watchlist.
+      operationId: removeStocksFromWatchlist
+      x-eov-operation-handler: watchlists/removeStocksFromWatchlist
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to remove the stock from.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: Array of Stocks to remove from the watchlist
+              items:
+                type: number
+                description: ID of the Stock to remove from the watchlist
+      responses:
+        '204':
+          description: Stock(s) removed from watchlist successfully
+        '404':
+          description: Watchlist or stock not found
   /watchlists/{watchlistId}/stocks/{stockId}:
     delete:
       tags:

@@ -254,7 +254,7 @@ describe('API Server', () => {
           })
       })
 
-      it('removeStockFromWatchlist returns 204', async () => {
+      it('removeStocksFromWatchlist returns 204', async () => {
         await supertest(app)
           .delete(`${apiPrefix}/watchlists/1/stocks/1`)
           .set('Cookie', [`token=${VALID_TOKEN}`])
@@ -290,7 +290,7 @@ describe('API Server', () => {
     it('listStocksInWatchlist returns 401 when unauthorized', async () => {
       await supertest(app).get(`${apiPrefix}/watchlists/1/stocks`).expect(401)
     })
-    it('removeStockFromWatchlist returns 401 when unauthorized', async () => {
+    it('removeStocksFromWatchlist returns 401 when unauthorized', async () => {
       await supertest(app).delete(`${apiPrefix}/watchlists/1/stocks/1`).expect(401)
     })
   })
