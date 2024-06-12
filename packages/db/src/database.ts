@@ -1,13 +1,4 @@
-import {
-  Sequelize,
-  Model,
-  DataTypes,
-  InferAttributes,
-  InferCreationAttributes,
-  Options as SequelizeOptions,
-} from '@sequelize/core'
-import { Attribute } from '@sequelize/core/decorators-legacy'
-import { PostgresDialect } from '@sequelize/postgres'
+import { Sequelize, Options as SequelizeOptions } from '@sequelize/core'
 import { loadDbConfig } from './config'
 import { User, Stock, Watchlist, WatchlistStock, StockPrice } from './models'
 import { log, error as logError } from '@repo/logger'
@@ -37,10 +28,10 @@ export async function connectToDatabase(): Promise<Sequelize> {
     sequelize
       .sync({ alter: true })
       .then(() => {
-        console.log('Database & tables created!')
+        log('Database & tables created!\n\n\n\n\n\n')
       })
       .catch((error) => {
-        console.error('There was an error creating the DB tables!:', error)
+        logError('There was an error creating the DB tables!:', error)
       })
   }
 
@@ -52,10 +43,3 @@ export async function connectToDatabase(): Promise<Sequelize> {
   }
   return sequelize
 }
-
-// const jane = await User.create({
-//   username: 'janedoe',
-//   birthday: new Date(1980, 6, 20),
-// })
-
-// console.log(jane.toJSON())
