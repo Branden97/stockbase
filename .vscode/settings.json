@@ -5,5 +5,5 @@
     }
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "conventionalCommits.scopes": ["api", "api-client"]
+  "conventionalCommits.scopes": ["api", "api-client", "stockbase"]
 }
