@@ -49,14 +49,14 @@ describe('createTokenPair()', () => {
     expect(typeof refreshToken).toBe('string')
   })
   it('should include fam, gen, and userId in the payload', () => {
-    const { token, refreshToken } = JwtService.createTokenPair({ userId: 1 })
+    const { token, refreshToken } = JwtService.createTokenPair({ userId: exampleCreationPayload.userId })
     const payload = jwt.decode(token, { json: true }) as JwtGeneratedPayload
     const refreshPayload = jwt.decode(refreshToken, {
       json: true,
     }) as JwtGeneratedPayload
     expect(typeof payload.fam).toBe('string')
     expect(typeof payload.gen).toBe('number')
-    expect(payload.userId).toBe('asdf')
+    expect(payload.userId).toBe(exampleCreationPayload.userId)
     expect(typeof refreshPayload.fam).toBe('string')
     expect(typeof refreshPayload.gen).toBe('number')
   })
@@ -87,7 +87,7 @@ describe('refreshTokenPair()', () => {
     }) as JwtGeneratedPayload
     expect(typeof payload.fam).toBe('string')
     expect(typeof payload.gen).toBe('number')
-    expect(payload.userId).toBe('myUserId')
+    expect(payload.userId).toBe(exampleCreationPayload.userId)
     expect(typeof refreshPayload.fam).toBe('string')
     expect(typeof refreshPayload.gen).toBe('number')
   })
@@ -325,6 +325,7 @@ describe('JwtService', () => {
             jwtService: {
               _isTokenBlacklisted: () => false,
               _isFamilyBlacklisted: () => false,
+              isTokenIssuedBeforeUserLoggedOutAll: () => false,
               isBlacklisted: () => false,
               blacklistFamily: mockBlacklistFamily,
               getLastGen: () => 0,
@@ -495,6 +496,7 @@ describe('JwtService', () => {
             jwtService: {
               isBlacklisted: () => false,
               _isTokenBlacklisted: () => false,
+              isTokenIssuedBeforeUserLoggedOutAll: () => false,
               _isFamilyBlacklisted: () => false,
               blacklistFamily: mockBlacklistFamily,
               getLastGen: () => 0,

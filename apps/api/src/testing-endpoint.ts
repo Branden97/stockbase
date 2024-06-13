@@ -1,12 +1,16 @@
 import { User } from '@repo/db'
 import { RequestHandler } from 'express'
+import { asyncHandler } from './utils/async-handler'
 
 // function to create user with random username, email, and password
 async function createRandomUser() {
-  const username = generateRandomLetters(8)
-  const email = generateRandomLetters(8) + '@example.com'
-  const passwordHash = generateRandomLetters(8)
-  return await User.create({ username, email, passwordHash })
+  await User.create({
+    username: generateRandomLetters(8),
+    email: generateRandomLetters(8) + '@example.com',
+    passwordHash: generateRandomLetters(8),
+    firstName: generateRandomLetters(8),
+    lastName: generateRandomLetters(8),
+  })
 }
 
 function generateRandomLetters(length: number) {
@@ -20,15 +24,13 @@ function generateRandomLetters(length: number) {
   return string
 }
 
-// Express endpoint handler
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-export const handleTestingEndpointRequest: RequestHandler = async (req, res, next) => {
+export const handleTestingEndpointRequest: RequestHandler = asyncHandler(async (req, res, next) => {
   try {
     const createdUser = await createRandomUser()
     throw new Error('wubalubadubdub')
     // @ts-ignore
-    return res.json(createdUser.toJSON())
+    res.json(createdUser.toJSON())
   } catch (error) {
     next(error)
   }
-}
+})

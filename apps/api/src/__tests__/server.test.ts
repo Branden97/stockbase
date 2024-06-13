@@ -44,6 +44,8 @@ describe('API Server', () => {
           username: 'testuser',
           email: 'test@example.com',
           password: 'password123',
+          firstName: 'asdfasdf',
+          lastName: 'asdfasdf',
         })
         .expect(201)
         .then((res) => {
