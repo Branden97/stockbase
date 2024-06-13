@@ -349,7 +349,7 @@ paths:
                 allOf:
                   - $ref: '#/components/schemas/PaginationResponseFields'
                   - properties:
-                      stocks:
+                      prices:
                         type: array
                         items:
                           $ref: '#/components/schemas/StockPrice'

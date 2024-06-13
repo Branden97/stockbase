@@ -94,7 +94,7 @@ export interface GetStockPrices200Response {
    * @type {Array<StockPrice>}
    * @memberof GetStockPrices200Response
    */
-  stocks?: Array<StockPrice>
+  prices?: Array<StockPrice>
 }
 /**
  *

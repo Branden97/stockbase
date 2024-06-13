@@ -7,21 +7,26 @@
 
 // Need to use the React-specific entry point to import `createApi`
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { ListStocks200Response } from '@repo/api-client'
+import type { ListStocks200Response, GetStockPrices200Response } from '@repo/api-client'
 
 interface PaginationQueryParams {
   limit?: number
   page?: number
 }
+
+interface StockPricesQueryParams extends PaginationQueryParams {
+  stockId: string
+}
+
 export const stocksApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5001/api/v0/stocks' }),
   reducerPath: 'stocksApi',
   // Tag types are used for caching and invalidation.
-  tagTypes: ['Stocks'],
+  tagTypes: ['Stock', 'StockPrice'],
   endpoints: (build) => ({
     listStocks: build.query<ListStocks200Response, PaginationQueryParams>({
       query: ({ limit = 10, page = 1 }) => `?limit=${limit}&page=${page}`,
-      providesTags: (result, error, { page }) => [{ type: 'Stocks', id: `PAGE_${page}` }],
+      providesTags: (result, error, { page }) => [{ type: 'Stock', id: `PAGE_${page}` }],
       // Only have one cache entry so we can add to it over time
       serializeQueryArgs: ({ endpointName }) => {
         return endpointName
@@ -33,7 +38,21 @@ export const stocksApiSlice = createApi({
       // Refetch when the page arg changes
       forceRefetch: ({ currentArg, previousArg }) => currentArg?.page !== previousArg?.page,
     }),
+    listStockPrices: build.query<GetStockPrices200Response, StockPricesQueryParams>({
+      query: ({ stockId, limit = 10, page = 1 }) => `/${stockId}/prices?limit=${limit}&page=${page}`,
+      providesTags: (result, error, { stockId, page }) => [{ type: 'StockPrice', id: `${stockId}_PAGE_${page}` }],
+      // Only have one cache entry so we can add to it over time
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        return `${endpointName}-${queryArgs.stockId}`
+      },
+      // Always merge incoming data to the cache entry
+      merge: (currentCache, newItems) => {
+        currentCache.prices?.push(...(newItems.prices || []))
+      },
+      // Refetch when the page arg changes
+      forceRefetch: ({ currentArg, previousArg }) => currentArg?.page !== previousArg?.page,
+    }),
   }),
 })
 
-export const { useListStocksQuery } = stocksApiSlice
+export const { useListStocksQuery, useListStockPricesQuery } = stocksApiSlice
