@@ -10,6 +10,8 @@ import {
   Avatar,
   Typography,
   Switch,
+  Toolbar,
+  Box,
 } from '@mui/material'
 import HomeIcon from '@mui/icons-material/Home'
 import AssessmentIcon from '@mui/icons-material/Assessment'
@@ -17,6 +19,7 @@ import ListAltIcon from '@mui/icons-material/ListAlt'
 import SettingsIcon from '@mui/icons-material/Settings'
 import SupportIcon from '@mui/icons-material/Support'
 import LogoutIcon from '@mui/icons-material/Logout'
+import { UiStateProvider, useDrawerState, useUiStateContext } from '@/src/lib/hooks/use-ui-state'
 
 interface User {
   firstname: string
@@ -30,26 +33,25 @@ interface SideNavigationProps {
   toggleTheme: () => void
   isDarkMode: boolean
 }
-const drawerWidth = 240
+
 const SideNavigation: React.FC<SideNavigationProps> = ({
   isSignedIn,
   user,
   toggleTheme,
   isDarkMode,
 }) => {
-  return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-      }}
-    >
+  const {
+    mobileOpen,
+    isClosing,
+    handleDrawerClose,
+    handleDrawerTransitionEnd,
+    handleDrawerToggle,
+    drawerWidth,
+  } = useUiStateContext()
+  const drawerContents = (
+    <>
+      <Toolbar />
       <List>
-        <ListItem>
-          <Typography variant="h6">Website Name</Typography>
-        </ListItem>
         <ListItem>
           <ListItemText primary="Light/Dark Mode" />
           <Switch checked={isDarkMode} onChange={toggleTheme} />
@@ -96,7 +98,41 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
           </ListItem>
         ) : null}
       </List>
-    </Drawer>
+    </>
+  )
+  return (
+    <Box
+      component="nav"
+      sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+      aria-label="mailbox folders"
+    >
+      {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onTransitionEnd={handleDrawerTransitionEnd}
+        onClose={handleDrawerClose}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+        }}
+      >
+        {drawerContents}
+      </Drawer>
+      <Drawer
+        variant="permanent"
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+        }}
+        open
+      >
+        {drawerContents}
+      </Drawer>
+    </Box>
   )
 }
 

@@ -6,7 +6,10 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { StoreProvider } from './StoreProvider'
 import theme from '../theme'
 import SideNavigation from '../components/SideNavigation'
-import { AppBar, Box, CssBaseline, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, CssBaseline, IconButton, Toolbar, Typography } from '@mui/material'
+import { MenuOutlined } from '@mui/icons-material'
+import { UiStateProvider, useDrawerState, useUiStateContext } from '@/src/lib/hooks/use-ui-state'
+import { MyAppBar } from '../components/AppBar'
 
 export default function RootLayout({ children }: { children: React.ReactNode }): JSX.Element {
   // Example user data and authentication state
@@ -22,43 +25,37 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
     },
   })
 
-  const toggleTheme = () => {
+  const toggleTheme = (): void => {
     setIsDarkMode(!isDarkMode)
   }
 
   return (
-    <StoreProvider>
-      <html lang="en">
-      <body>
-          <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-              <Toolbar>
-                <Typography variant="h6" noWrap component="div">
-                  Clipped drawer
-                </Typography>
-              </Toolbar>
-            </AppBar>
-            <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-              <ThemeProvider theme={customTheme}>
-                {/* <Box sx={{ display: 'flex', width: '500px' }}> */}
+    <UiStateProvider>
+      <StoreProvider>
+        <html lang="en">
+          <body>
+            <Box sx={{ display: 'flex' }}>
+              <CssBaseline />
+              <MyAppBar />
+              <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+                <ThemeProvider theme={customTheme}>
                   <SideNavigation
                     isSignedIn={isSignedIn}
                     user={user}
                     toggleTheme={toggleTheme}
                     isDarkMode={isDarkMode}
                   />
-                {/* </Box> */}
 
-                <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                  <Toolbar />
-                  {children}
-                </Box>
-              </ThemeProvider>
-            </AppRouterCacheProvider>
-          </Box>
-        </body>
-      </html>
-    </StoreProvider>
+                  <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                    <Toolbar />
+                    {children}
+                  </Box>
+                </ThemeProvider>
+              </AppRouterCacheProvider>
+            </Box>
+          </body>
+        </html>
+      </StoreProvider>
+    </UiStateProvider>
   )
 }
