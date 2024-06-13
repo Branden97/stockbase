@@ -11,7 +11,7 @@ import { MenuOutlined } from '@mui/icons-material'
 import { UiStateProvider, useDrawerState, useUiStateContext } from '@/src/lib/hooks/use-ui-state'
 import { MyAppBar } from '../components/AppBar'
 
-export default function RootLayout({ children }: { children: React.ReactNode }): JSX.Element {
+export function MainContent({ children }: { children: React.ReactNode }): JSX.Element {
   // Example user data and authentication state
   const [isSignedIn, setIsSignedIn] = useState(false)
   const user = { firstname: 'John', lastname: 'Doe', email: 'john.doe@example.com' }
@@ -30,32 +30,45 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
   }
 
   return (
+    <ThemeProvider theme={customTheme}>
+      <html lang="en">
+        <body>
+          <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
+            <MyAppBar />
+            <SideNavigation
+              isSignedIn={isSignedIn}
+              user={user}
+              toggleTheme={toggleTheme}
+              isDarkMode={isDarkMode}
+            />
+
+            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+              <Toolbar />
+              {children}
+            </Box>
+          </Box>
+        </body>
+      </html>
+    </ThemeProvider>
+  )
+}
+
+type RootLayoutProps = {
+  children: React.ReactNode
+}
+
+const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
+  return (
     <UiStateProvider>
       <StoreProvider>
-        <html lang="en">
-          <body>
-            <Box sx={{ display: 'flex' }}>
-              <CssBaseline />
-              <MyAppBar />
-              <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-                <ThemeProvider theme={customTheme}>
-                  <SideNavigation
-                    isSignedIn={isSignedIn}
-                    user={user}
-                    toggleTheme={toggleTheme}
-                    isDarkMode={isDarkMode}
-                  />
-
-                  <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                    <Toolbar />
-                    {children}
-                  </Box>
-                </ThemeProvider>
-              </AppRouterCacheProvider>
-            </Box>
-          </body>
-        </html>
+        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+          {/* <ThemeProvider theme={customTheme}> */}
+          <MainContent>{children}</MainContent>
+          {/* </ThemeProvider> */}
+        </AppRouterCacheProvider>
       </StoreProvider>
     </UiStateProvider>
   )
 }
+export default RootLayout
