@@ -1,0 +1,946 @@
+openapi: 3.0.0
+info:
+  title: Stockbase API
+  description: API for managing stock watchlists and fetching stock prices.
+  version: 0.0.1
+  contact:
+    name: Support
+    email: support@stockbase.xyz
+    url: https://stockbase.xyz/support
+  license:
+    name: UNLICENSED
+    url: https://stockbase.xyz/terms
+
+servers:
+  - url: 'https://stockbase.xyz/api/v0'
+    description: 'Production Server'
+  - url: 'https://localhost:5001/api/v0'
+    description: 'Development Server'
+  - url: 'http://localhost:5001/api/v0'
+    description: 'Development Server'
+
+tags:
+  - name: auth
+    x-displayName: Authentication
+    description: Endpoints related to user authentication.
+  - name: stocks
+    x-displayName: Stocks
+    description: Endpoints related to stock information and prices.
+  - name: users
+    x-displayName: Users
+    description: Endpoints related to user information.
+  - name: watchlists
+    x-displayName: Watchlists
+    description: Endpoints related to managing user watchlists.
+
+paths:
+  /signup:
+    post:
+      tags:
+        - auth
+      summary: User signup
+      description: Creates a new user account.
+      operationId: signup
+      x-eov-operation-handler: auth/signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+  /refreshToken:
+    get:
+      summary: Refresh your Access Token
+      description: Refresh your Access Token using the Refresh Token so you stay logged in longer.
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshTokenResponse'
+        '401':
+          description: Unauthenticated
+      operationId: refreshToken
+      x-eov-operation-handler: refreshToken
+      security:
+        - JWT_Refresh_Token: []
+      parameters: []
+    parameters: []
+
+  /login:
+    post:
+      tags:
+        - auth
+      summary: User login
+      description: Authenticates a user and returns a JWT token.
+      operationId: login
+      x-eov-operation-handler: auth/login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+  /logout:
+    get:
+      tags:
+        - auth
+      summary: Logout current "session"
+      description: Logs-out the user from the current device by invalidating the current token/refreshToken pair.
+      operationId: logout
+      x-eov-operation-handler: auth/logout
+      security:
+        - JWT_Token: []
+        - JWT_Refresh_Token: []
+      responses:
+        '204':
+          description: Logged out successfully
+        '401':
+          description: Unauthorized
+
+  /logoutAll:
+    get:
+      tags:
+        - auth
+      summary: Logout all devices
+      description: Logs-out the user from all devices by invalidating all active tokens.
+      operationId: logoutAll
+      x-eov-operation-handler: auth/logoutAll
+      security:
+        - JWT_Token: []
+      responses:
+        '204':
+          description: Logged out from all devices successfully
+        '401':
+          description: Unauthorized
+
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Get user details
+      description: Retrieves the details of a specific user.
+      operationId: getUser
+      x-eov-operation-handler: users/getUser
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+    patch:
+      tags:
+        - users
+      summary: Update user
+      description: Updates the details of a specific user.
+      operationId: updateUser
+      x-eov-operation-handler: users/updateUser
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+    delete:
+      tags:
+        - users
+      summary: Delete user
+      description: Deletes a specific user.
+      operationId: deleteUser
+      x-eov-operation-handler: users/deleteUser
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to delete.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted successfully
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+  /stocks:
+    get:
+      tags:
+        - stocks
+      summary: List all stocks
+      description: Retrieves a list of all stocks.
+      operationId: listStocks
+      x-eov-operation-handler: stocks/listStocks
+      parameters:
+        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: '#/components/parameters/paginationPage'
+      responses:
+        '200':
+          description: List of stocks retrieved successfully (including pagination)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponseFields'
+                  - properties:
+                      stocks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Stock'
+
+  /stocks/{stockId}:
+    get:
+      tags:
+        - stocks
+      summary: Get stock details
+      description: Retrieves the details of a specific stock.
+      operationId: getStock
+      x-eov-operation-handler: stocks/getStock
+      parameters:
+        - name: stockId
+          in: path
+          required: true
+          description: The ID of the stock to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stock details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stock'
+        '404':
+          description: Stock not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+  /stocks/{stockId}/prices:
+    get:
+      tags:
+        - stocks
+      summary: Get stock price history
+      description: Retrieves the price history of a specific stock.
+      operationId: getStockPrices
+      x-eov-operation-handler: stocks/getStockPrices
+      parameters:
+        - name: stockId
+          in: path
+          required: true
+          description: The ID of the stock to retrieve price history for.
+          schema:
+            type: integer
+        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: '#/components/parameters/paginationPage'
+      responses:
+        '200':
+          description: Stock price history retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponseFields'
+                  - properties:
+                      stocks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/StockPrice'
+        '404':
+          description: Stock not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+  /watchlists:
+    get:
+      tags:
+        - watchlists
+      summary: List all watchlists
+      description: Retrieves a list of all watchlists for the authenticated user.
+      operationId: listWatchlists
+      x-eov-operation-handler: watchlists/listWatchlists
+      security:
+        - JWT_Token: []
+      parameters:
+        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: '#/components/parameters/paginationPage'
+      responses:
+        '200':
+          description: List of watchlists retrieved successfully (including pagination)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponseFields'
+                  - properties:
+                      watchlists:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Watchlist'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+    post:
+      tags:
+        - watchlists
+      summary: Create a new watchlist
+      description: Creates a new watchlist for the authenticated user.
+      operationId: createWatchlist
+      x-eov-operation-handler: watchlists/createWatchlist
+      security:
+        - JWT_Token: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWatchlistRequest'
+      responses:
+        '201':
+          description: Watchlist created successfully
+          content:
+            application/json:
+              schema:
+                # This wasn't letting the stocks array come through...
+                # allOf:
+                #   - $ref: '#/components/schemas/Watchlist'
+                #   - type: object
+                #     properties:
+                #       stocks:
+                #         type: array
+                #         items:
+                #           $ref: '#/components/schemas/Stock'
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  stocks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Stock'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+  /watchlists/{watchlistId}:
+    get:
+      tags:
+        - watchlists
+      summary: Get watchlist details
+      description: Retrieves the details of a specific watchlist.
+      operationId: getWatchlist
+      x-eov-operation-handler: watchlists/getWatchlist
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Watchlist details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Watchlist'
+        '404':
+          description: Watchlist not found
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+    delete:
+      tags:
+        - watchlists
+      summary: Delete watchlist
+      description: Deletes a specific watchlist.
+      operationId: deleteWatchlist
+      x-eov-operation-handler: watchlists/deleteWatchlist
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to delete.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Watchlist deleted successfully
+        '404':
+          description: Watchlist not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+    patch:
+      tags:
+        - watchlists
+      summary: Update watchlist
+      description: Updates the details of a specific watchlist.
+      operationId: updateWatchlist
+      x-eov-operation-handler: watchlists/updateWatchlist
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWatchlistRequest'
+      responses:
+        '200':
+          description: Watchlist updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Watchlist'
+        '404':
+          description: Watchlist not found
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+  /watchlists/{watchlistId}/stocks:
+    post:
+      tags:
+        - watchlists
+      summary: Add stocks to watchlist
+      description: Adds an array of stocks to a specific watchlist.
+      operationId: addStocksToWatchlist
+      x-eov-operation-handler: watchlists/addStocksToWatchlist
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to add the stock to.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: Array of Stocks *successfully* added to the watchlist
+              items:
+                type: number
+                description: ID of the Stock to add to the watchlist
+      responses:
+        '201':
+          description: Stock added to watchlist successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stock'
+        '409':
+          description: Stock(s) already in watchlist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+        '404':
+          description: Watchlist or stock not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+    get:
+      tags:
+        - watchlists
+      summary: List stocks in watchlist
+      description: Retrieves the stocks in a specific watchlist.
+      operationId: listStocksInWatchlist
+      x-eov-operation-handler: watchlists/listStocksInWatchlist
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to retrieve stocks from.
+          schema:
+            type: integer
+        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: '#/components/parameters/paginationPage'
+      responses:
+        '200':
+          description: List of stocks in watchlist retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponseFields'
+                  - properties:
+                      stocks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Stock'
+        '404':
+          description: Watchlist not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+    delete:
+      tags:
+        - watchlists
+      summary: Remove multiple stocks from watchlist
+      description: Removes multiple stocks from a specific watchlist.
+      operationId: removeStocksFromWatchlist
+      x-eov-operation-handler: watchlists/removeStocksFromWatchlist
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to remove the stock from.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: Array of Stocks to remove from the watchlist
+              items:
+                type: number
+                description: ID of the Stock to remove from the watchlist
+      responses:
+        '204':
+          description: Stock(s) removed from watchlist successfully
+        '404':
+          description: Watchlist or stock not found
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+  /watchlists/{watchlistId}/stocks/{stockId}:
+    delete:
+      tags:
+        - watchlists
+      summary: Remove stock from watchlist
+      description: Removes a stock from a specific watchlist.
+      operationId: removeStockFromWatchlist
+      x-eov-operation-handler: watchlists/removeStockFromWatchlist
+      security:
+        - JWT_Token: []
+      parameters:
+        - name: watchlistId
+          in: path
+          required: true
+          description: The ID of the watchlist to remove the stock from.
+          schema:
+            type: integer
+        - name: stockId
+          in: path
+          required: true
+          description: The ID of the stock to remove.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Stock removed from watchlist successfully
+        '404':
+          description: Watchlist or stock not found
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleErrorResponse'
+
+components:
+  securitySchemes:
+    JWT_Token:
+      type: apiKey
+      in: cookie
+      name: token
+    JWT_Refresh_Token:
+      type: apiKey
+      in: cookie
+      name: refreshToken
+
+  schemas:
+    ##
+    # Request Schemas
+    ##
+
+    SignupRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        username:
+          type: string
+          minLength: 3
+        email:
+          $ref: '#/components/schemas/EmailField'
+        password:
+          type: string
+          minLength: 8
+
+      required:
+        - firstName
+        - lastName
+        - username
+        - email
+        - password
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          $ref: '#/components/schemas/EmailField'
+        oldPassword:
+          $ref: '#/components/schemas/PasswordField'
+        newPassword:
+          $ref: '#/components/schemas/PasswordField'
+      anyOf:
+        - required: ['username']
+        - required: ['firstName']
+        - required: ['lastName']
+        - required: ['email']
+        - required: ['newPassword']
+      allOf:
+        - oneOf:
+            - not:
+                required: ['newPassword']
+            - required: ['oldPassword']
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          $ref: '#/components/schemas/EmailField'
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    CreateWatchlistRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        stockIds:
+          type: array
+          items:
+            type: integer
+      required:
+        - name
+
+    UpdateWatchlistRequest:
+      type: object
+      properties:
+        # TODO: add ordering functionality
+        name:
+          type: string
+      required:
+        - name
+
+    ##
+    # Response Schemas
+    ##
+
+    LoginResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        userId:
+          type: number
+        iat:
+          type: number
+        exp:
+          type: number
+
+    RefreshTokenResponse:
+      $ref: '#/components/schemas/LoginResponse'
+
+    SimpleErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ##
+    # Model Schemas
+    ##
+
+    User:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          $ref: '#/components/schemas/EmailField'
+
+    Stock:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        companyName:
+          type: string
+
+    StockPrice:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        stockId:
+          type: integer
+        price:
+          type: number
+          format: float
+        recordedAt:
+          type: string
+          format: date-time
+
+    Watchlist:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    ##
+    # Common Field Schemas
+    ##
+
+    EmailField:
+      type: string
+      format: email
+
+    # Will use this when I implement updating the user
+    PasswordField:
+      type: string
+      minLength: 8
+
+    UsernameField:
+      type: string
+      minLength: 3
+
+    ##
+    # Common Pagination Schemas
+    ##
+
+    PaginationResponseFields:
+      type: object
+      properties:
+        paginationMeta:
+          type: object
+          properties:
+            totalPages:
+              type: integer
+            totalItems:
+              type: integer
+            limit:
+              type: integer
+            currentPage:
+              type: integer
+
+  parameters:
+    paginationLimit:
+      name: limit
+      in: query
+      description: The number of items to return.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    paginationPage:
+      name: page
+      in: query
+      description: The page number to return.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1

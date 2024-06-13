@@ -1,0 +1,45 @@
+{
+  "name": "@repo/db",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "new-migration-file": "touch src/migrations/$(date +%Y%m%d%H%M)-new-db-migration.ts",
+    "migrate:up": "ts-node --compilerOptions '{\"strict\": false, \"module\": \"CommonJS\"}' -P ./tsconfig.json scripts/migrate-up.ts",
+    "migrate:down": "ts-node --compilerOptions '{\"strict\": false, \"module\": \"CommonJS\"}' -P ./tsconfig.json scripts/migrate-down.ts"
+  },
+  "jest": {
+    "preset": "@repo/jest-presets/node"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/jest-presets": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.24",
+    "jest": "^29.7.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@repo/logger": "workspace:*",
+    "@sequelize/core": "7.0.0-alpha.37",
+    "@sequelize/postgres": "7.0.0-alpha.41",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
+    "umzug": "^3.8.1",
+    "yup": "^1.4.0"
+  }
+}
