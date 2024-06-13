@@ -36,12 +36,13 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@repo/api-client": "workspace:*",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.19",
     "@mui/material-nextjs": "^5.15.11",
+    "@repo/api-client": "workspace:*",
     "next": "^14.1.1"
   }
 }

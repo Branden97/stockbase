@@ -39,7 +39,7 @@ function StocksPage(): JSX.Element {
   }
 
   return (
-    <div>
+    <>
       <h1>Stocks</h1>
       {data?.stocks?.map((stock) => (
         <div className="stockRow" key={stock.id}>
@@ -48,7 +48,7 @@ function StocksPage(): JSX.Element {
         </div>
       ))}
       {isFetching && <div>Loading more...</div>}
-    </div>
+    </>
   )
 }
 
