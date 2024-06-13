@@ -1,11 +1,36 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useListStocksQuery } from '@/src/lib/features/stocks/stocksApiSlice'
+import './page.css'
 
 function StocksPage(): JSX.Element {
-  const { data, isLoading, isError } = useListStocksQuery(100)
+  const [page, setPage] = useState(1)
+  const { data, isLoading, isError, isFetching, refetch } = useListStocksQuery(
+    { limit: 10, page }
+  )
 
-  if (isLoading) {
+  const loadMore = () => {
+    const totalPages = data?.paginationMeta?.totalPages
+    if (!totalPages || page >= totalPages || isFetching) return
+    setPage((prevPage) => prevPage + 1)
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 2
+      ) {
+        loadMore()
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [isFetching, loadMore])
+
+  if (isLoading && page === 1) {
     return <div>Loading...</div>
   }
 
@@ -17,11 +42,12 @@ function StocksPage(): JSX.Element {
     <div>
       <h1>Stocks</h1>
       {data?.stocks?.map((stock) => (
-        <div key={stock.id}>
+        <div className="stockRow" key={stock.id}>
           <h2>{stock.symbol}</h2>
           <p>{stock.companyName}</p>
         </div>
       ))}
+      {isFetching && <div>Loading more...</div>}
     </div>
   )
 }
