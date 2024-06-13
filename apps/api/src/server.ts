@@ -43,10 +43,15 @@ export const createServer = async (): Promise<Express> => {
   const app = express()
   app
     .disable('x-powered-by')
+    .use(
+      cors({
+        origin: apiConfig.CORS_ORIGIN,
+        credentials: true,
+      })
+    )
     .use(morgan('dev')) // Logging
     .use(urlencoded({ extended: true }))
     .use(json())
-    .use(cors())
     .get('/status', (_, res) => {
       return res.json({ ok: true })
     })
@@ -109,7 +114,7 @@ export const createServer = async (): Promise<Express> => {
     .delete('/api/v0/watchlists/:watchlistId/stocks', removeStocksFromWatchlistHandler)
     .delete('/api/v0/watchlists/:watchlistId/stocks/:stockId', removeStockFromWatchlistHandler)
     .use(errorHandler)
-  
+
   const redis = new Redis({
     port: apiConfig.REDIS_PORT,
     host: apiConfig.REDIS_HOST,
