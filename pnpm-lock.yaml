@@ -224,12 +224,15 @@ importers:
       '@emotion/styled':
         specifier: ^11.11.5
         version: 11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0)
+      '@mui/icons-material':
+        specifier: ^5.15.20
+        version: 5.15.20(@mui/material@5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.62)(react@18.2.0)
       '@mui/material':
         specifier: ^5.15.19
         version: 5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mui/material-nextjs':
         specifier: ^5.15.11
-        version: 5.15.11(@emotion/cache@11.11.0)(@mui/material@5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.62)(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
+        version: 5.15.11(@emotion/cache@11.11.0)(@mui/material@5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.62)(next@14.1.1(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@redux-devtools/extension':
         specifier: ^3.3.0
         version: 3.3.0(redux@5.0.1)
@@ -250,7 +253,7 @@ importers:
         version: link:../../packages/ui
       next:
         specifier: ^14.1.1
-        version: 14.1.1(@babel/core@7.24.0)(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 14.1.1(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -279,6 +282,130 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.19
         version: 18.2.19
+      typescript:
+        specifier: ^5.3.3
+        version: 5.3.3
+
+  apps/worker:
+    dependencies:
+      '@repo/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@repo/api-spec':
+        specifier: workspace:*
+        version: link:../../packages/api-spec
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@repo/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
+      '@sequelize/core':
+        specifier: 7.0.0-alpha.37
+        version: 7.0.0-alpha.37(pg@8.12.0)
+      body-parser:
+        specifier: ^1.20.2
+        version: 1.20.2
+      bottleneck:
+        specifier: ^2.19.5
+        version: 2.19.5
+      cookie-parser:
+        specifier: ^1.4.6
+        version: 1.4.6
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      express:
+        specifier: ^4.19.2
+        version: 4.19.2
+      express-openapi-validator:
+        specifier: ^5.2.0
+        version: 5.2.0(express@4.19.2)
+      ioredis:
+        specifier: ^5.4.1
+        version: 5.4.1
+      ioredis-mock:
+        specifier: ^8.9.0
+        version: 8.9.0(@types/ioredis-mock@8.2.5)(ioredis@5.4.1)
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
+      morgan:
+        specifier: ^1.10.0
+        version: 1.10.0
+      server-timing:
+        specifier: ^3.3.3
+        version: 3.3.3
+      swagger-ui-express:
+        specifier: ^5.0.1
+        version: 5.0.1(express@4.19.2)
+      uuid:
+        specifier: ^10.0.0
+        version: 10.0.0
+      yahoo-finance2:
+        specifier: ^2.11.3
+        version: 2.11.3
+      yup:
+        specifier: ^1.4.0
+        version: 1.4.0
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/config-eslint
+      '@repo/jest-presets':
+        specifier: workspace:*
+        version: link:../../packages/jest-presets
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/config-typescript
+      '@types/body-parser':
+        specifier: ^1.19.5
+        version: 1.19.5
+      '@types/cookie-parser':
+        specifier: ^1.4.7
+        version: 1.4.7
+      '@types/cors':
+        specifier: ^2.8.17
+        version: 2.8.17
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.21
+      '@types/ioredis-mock':
+        specifier: ^8.2.5
+        version: 8.2.5
+      '@types/jest':
+        specifier: ^29.5.12
+        version: 29.5.12
+      '@types/jsonwebtoken':
+        specifier: ^9.0.6
+        version: 9.0.6
+      '@types/morgan':
+        specifier: ^1.9.9
+        version: 1.9.9
+      '@types/node':
+        specifier: ^20.11.24
+        version: 20.11.24
+      '@types/supertest':
+        specifier: ^6.0.2
+        version: 6.0.2
+      '@types/swagger-ui-express':
+        specifier: ^4.1.6
+        version: 4.1.6
+      '@types/uuid':
+        specifier: ^9.0.8
+        version: 9.0.8
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@20.11.24)(babel-plugin-macros@3.1.0)
+      supertest:
+        specifier: ^6.3.4
+        version: 6.3.4
+      tsup:
+        specifier: ^8.0.2
+        version: 8.0.2(postcss@8.4.35)(typescript@5.3.3)
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -497,13 +624,13 @@ importers:
         version: 5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mui/material-nextjs':
         specifier: ^5.15.11
-        version: 5.15.11(@emotion/cache@11.11.0)(@mui/material@5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.62)(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
+        version: 5.15.11(@emotion/cache@11.11.0)(@mui/material@5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.62)(next@14.1.1(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@repo/api-client':
         specifier: workspace:*
         version: link:../api-client
       next:
         specifier: ^14.1.1
-        version: 14.1.1(@babel/core@7.24.0)(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 14.1.1(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -2353,6 +2480,9 @@ packages:
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
 
+  ajv@8.10.0:
+    resolution: {integrity: sha512-bzqAEZOjkrUMl2afH8dknrq5KEk2SrwdBROR+vH1EKVQTqaUbJVPdc/gEdggTMM0Se+s+Ja4ju4TlNcStKl2Hw==}
+
   ajv@8.13.0:
     resolution: {integrity: sha512-PRA911Blj99jR5RMeTunVbNXMF6Lp4vZXnk5GQjcnUWUTsrXtekg/pnmFFI2u/I36Y/2bITGS30GZCXei6uNkA==}
 
@@ -2543,6 +2673,9 @@ packages:
   body-parser@1.20.2:
     resolution: {integrity: sha512-ml9pReCu3M61kGlqoTm2umSXTlRTuGTx0bfYj+uIUKKYycG5NtSbeetV3faSU6R7ajOPw0g/J1PvK4qNy7s5bA==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
+
+  bottleneck@2.19.5:
+    resolution: {integrity: sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==}
 
   bplist-parser@0.2.0:
     resolution: {integrity: sha512-z0M+byMThzQmD9NILRniCUXYsYpjwnlO8N5uCFaCqIOpqRsJCrQL9NK3JsD67CN5a08nF5oIL2bD6loTdHOuKw==}
@@ -6052,6 +6185,10 @@ packages:
   toposort@2.0.2:
     resolution: {integrity: sha512-0a5EOkAUp8D4moMi2W8ZF8jcga7BgZd91O/yabJCFY8az+XSzeGyTKs0Aoo897iV1Nj6guFq8orWDS96z91oGg==}
 
+  tough-cookie-file-store@2.0.3:
+    resolution: {integrity: sha512-sMpZVcmFf6EYFHFFl+SYH4W1/OnXBYMGDsv2IlbQ2caHyFElW/UR/gpj/KYU1JwmP4dE9xqwv2+vWcmlXHojSw==}
+    engines: {node: '>=6'}
+
   tough-cookie@4.1.3:
     resolution: {integrity: sha512-aX/y5pVRkfRnfmuX+OdbSdXvPe6ieKX/G2s7e98f4poJHnqH3281gDPm/metm6E/WRamfx7WC4HUqkWHfQHprw==}
     engines: {node: '>=6'}
@@ -6622,6 +6759,11 @@ packages:
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
+
+  yahoo-finance2@2.11.3:
+    resolution: {integrity: sha512-yN4ADFNi2oNYtO79ntbEkSWdVi4KVmGYLwDJ5KV0czxILbAGj4ah6oCBYvMONeHAeDqxtS62zrG8xrHNF/2STw==}
+    engines: {node: '>=16.0.0'}
+    hasBin: true
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
@@ -7668,11 +7810,11 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.2.62
 
-  '@mui/material-nextjs@5.15.11(@emotion/cache@11.11.0)(@mui/material@5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.62)(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
+  '@mui/material-nextjs@5.15.11(@emotion/cache@11.11.0)(@mui/material@5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.62)(next@14.1.1(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.24.7
       '@mui/material': 5.15.19(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react@18.2.0))(@types/react@18.2.62)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      next: 14.1.1(@babel/core@7.24.0)(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      next: 14.1.1(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react: 18.2.0
     optionalDependencies:
       '@emotion/cache': 11.11.0
@@ -8751,6 +8893,10 @@ snapshots:
     optionalDependencies:
       ajv: 8.16.0
 
+  ajv-formats@2.1.1(ajv@8.10.0):
+    optionalDependencies:
+      ajv: 8.10.0
+
   ajv-formats@2.1.1(ajv@8.16.0):
     optionalDependencies:
       ajv: 8.16.0
@@ -8768,6 +8914,13 @@ snapshots:
       fast-deep-equal: 3.1.3
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
+      uri-js: 4.4.1
+
+  ajv@8.10.0:
+    dependencies:
+      fast-deep-equal: 3.1.3
+      json-schema-traverse: 1.0.0
+      require-from-string: 2.0.2
       uri-js: 4.4.1
 
   ajv@8.13.0:
@@ -9021,6 +9174,8 @@ snapshots:
       unpipe: 1.0.0
     transitivePeerDependencies:
       - supports-color
+
+  bottleneck@2.19.5: {}
 
   bplist-parser@0.2.0:
     dependencies:
@@ -12236,7 +12391,7 @@ snapshots:
 
   negotiator@0.6.3: {}
 
-  next@14.1.1(@babel/core@7.24.0)(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  next@14.1.1(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@next/env': 14.1.1
       '@swc/helpers': 0.5.2
@@ -12246,7 +12401,7 @@ snapshots:
       postcss: 8.4.31
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      styled-jsx: 5.1.1(@babel/core@7.24.0)(babel-plugin-macros@3.1.0)(react@18.2.0)
+      styled-jsx: 5.1.1(babel-plugin-macros@3.1.0)(react@18.2.0)
     optionalDependencies:
       '@next/swc-darwin-arm64': 14.1.1
       '@next/swc-darwin-x64': 14.1.1
@@ -13356,12 +13511,11 @@ snapshots:
     dependencies:
       inline-style-parser: 0.1.1
 
-  styled-jsx@5.1.1(@babel/core@7.24.0)(babel-plugin-macros@3.1.0)(react@18.2.0):
+  styled-jsx@5.1.1(babel-plugin-macros@3.1.0)(react@18.2.0):
     dependencies:
       client-only: 0.0.1
       react: 18.2.0
     optionalDependencies:
-      '@babel/core': 7.24.0
       babel-plugin-macros: 3.1.0
 
   stylis@4.2.0: {}
@@ -13503,6 +13657,10 @@ snapshots:
   toposort-class@1.0.1: {}
 
   toposort@2.0.2: {}
+
+  tough-cookie-file-store@2.0.3:
+    dependencies:
+      tough-cookie: 4.1.3
 
   tough-cookie@4.1.3:
     dependencies:
@@ -14116,6 +14274,17 @@ snapshots:
   xtend@4.0.2: {}
 
   y18n@5.0.8: {}
+
+  yahoo-finance2@2.11.3:
+    dependencies:
+      '@types/tough-cookie': 4.0.5
+      ajv: 8.10.0
+      ajv-formats: 2.1.1(ajv@8.10.0)
+      node-fetch: 2.7.0
+      tough-cookie: 4.1.3
+      tough-cookie-file-store: 2.0.3
+    transitivePeerDependencies:
+      - encoding
 
   yallist@3.1.1: {}
 
