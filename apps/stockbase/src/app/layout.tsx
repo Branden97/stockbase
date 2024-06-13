@@ -10,11 +10,15 @@ import { AppBar, Box, CssBaseline, IconButton, Toolbar, Typography } from '@mui/
 import { MenuOutlined } from '@mui/icons-material'
 import { UiStateProvider, useDrawerState, useUiStateContext } from '@/src/lib/hooks/use-ui-state'
 import { MyAppBar } from '../components/AppBar'
+import { usePathname } from 'next/navigation'
 
 export function MainContent({ children }: { children: React.ReactNode }): JSX.Element {
   // Example user data and authentication state
   const [isSignedIn, setIsSignedIn] = useState(false)
   const user = { firstname: 'John', lastname: 'Doe', email: 'john.doe@example.com' }
+
+  const pathname = usePathname()
+  const hideNavigation = pathname === '/login' || pathname === '/signup'
 
   // Theme toggle logic
   const [isDarkMode, setIsDarkMode] = useState(true)
@@ -33,20 +37,30 @@ export function MainContent({ children }: { children: React.ReactNode }): JSX.El
     <ThemeProvider theme={customTheme}>
       <html lang="en">
         <body>
-          <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <MyAppBar />
-            <SideNavigation
-              isSignedIn={isSignedIn}
-              user={user}
-              toggleTheme={toggleTheme}
-              isDarkMode={isDarkMode}
-            />
+          <CssBaseline />
+          {!hideNavigation && (
+            <>
+              <MyAppBar />
+              <SideNavigation
+                isSignedIn={isSignedIn}
+                user={user}
+                toggleTheme={toggleTheme}
+                isDarkMode={isDarkMode}
+              />
+            </>
+          )}
 
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-              <Toolbar />
-              {children}
-            </Box>
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              p: hideNavigation ? 0 : 3,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {!hideNavigation && <Toolbar />}
+            {children}
           </Box>
         </body>
       </html>
@@ -58,7 +72,7 @@ type RootLayoutProps = {
   children: React.ReactNode
 }
 
-const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
+function RootLayout({ children }: RootLayoutProps): JSX.Element {
   return (
     <UiStateProvider>
       <StoreProvider>
