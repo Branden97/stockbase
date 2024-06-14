@@ -1,23 +1,24 @@
 'use client'
-import React, { useState } from 'react'
-import './styles.css'
+import { Box, CssBaseline, Toolbar } from '@mui/material'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { StoreProvider } from './StoreProvider'
-import theme from '../theme'
-import SideNavigation from '../components/SideNavigation'
-import { AppBar, Box, CssBaseline, IconButton, Toolbar, Typography } from '@mui/material'
-import { MenuOutlined } from '@mui/icons-material'
-import { UiStateProvider, useDrawerState, useUiStateContext } from '@/src/lib/hooks/use-ui-state'
+import * as navigation from 'next/navigation'
+import React, { useState } from 'react'
+import { ToastContainer } from 'react-toastify'
+import { UiStateProvider } from '@/src/lib/hooks/use-ui-state'
+import 'react-toastify/dist/ReactToastify.css'
 import { MyAppBar } from '../components/AppBar'
-import { usePathname } from 'next/navigation'
+import SideNavigation from '../components/SideNavigation'
+import theme from '../theme'
+import { StoreProvider } from './StoreProvider'
+import './styles.css'
 
 export function MainContent({ children }: { children: React.ReactNode }): JSX.Element {
   // Example user data and authentication state
   const [isSignedIn, setIsSignedIn] = useState(false)
   const user = { firstname: 'John', lastname: 'Doe', email: 'john.doe@example.com' }
 
-  const pathname = usePathname()
+  const pathname = navigation.usePathname()
   const hideNavigation = pathname === '/login' || pathname === '/signup'
 
   // Theme toggle logic
@@ -37,15 +38,16 @@ export function MainContent({ children }: { children: React.ReactNode }): JSX.El
     <ThemeProvider theme={customTheme}>
       <html lang="en">
         <body>
+          <ToastContainer limit={10} stacked theme={isDarkMode ? 'dark' : 'light'} />
           <CssBaseline />
           {!hideNavigation && (
             <>
               <MyAppBar />
               <SideNavigation
-                isSignedIn={isSignedIn}
-                user={user}
-                toggleTheme={toggleTheme}
                 isDarkMode={isDarkMode}
+                isSignedIn={isSignedIn}
+                toggleTheme={toggleTheme}
+                user={user}
               />
             </>
           )}
@@ -68,7 +70,7 @@ export function MainContent({ children }: { children: React.ReactNode }): JSX.El
   )
 }
 
-type RootLayoutProps = {
+interface RootLayoutProps {
   children: React.ReactNode
 }
 

@@ -1,6 +1,9 @@
 export * from './generated'
-// import axios from 'axios'
-import { Configuration, AuthApi, UsersApi, StocksApi, WatchlistsApi } from './generated'
+import axios, { AxiosRequestConfig } from 'axios'
+import { AuthApi, Configuration, StocksApi, UsersApi, WatchlistsApi } from './generated'
+
+export const axiosInstance = axios.create()
+export const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5001/api/v0'
 
 export class ApiClient {
   private _configuration: Configuration
@@ -11,13 +14,13 @@ export class ApiClient {
 
   constructor() {
     this._configuration = new Configuration({
-      basePath: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5001/api/v0',
-      baseOptions: { withCredentials: true },
+      basePath: API_BASE_URL,
+      baseOptions: { withCredentials: true } as AxiosRequestConfig,
     })
-    this._authApi = new AuthApi(this._configuration)
-    this._usersApi = new UsersApi(this._configuration)
-    this._stocksApi = new StocksApi(this._configuration)
-    this._watchlistsApi = new WatchlistsApi(this._configuration)
+    this._authApi = new AuthApi(this._configuration, API_BASE_URL, axiosInstance)
+    this._usersApi = new UsersApi(this._configuration, API_BASE_URL, axiosInstance)
+    this._stocksApi = new StocksApi(this._configuration, API_BASE_URL, axiosInstance)
+    this._watchlistsApi = new WatchlistsApi(this._configuration, API_BASE_URL, axiosInstance)
   }
 
   get authApi() {

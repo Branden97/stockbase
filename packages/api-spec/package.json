@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsup; cp src/api-spec.yml dist/",
-    "dev": "tsup --watch",
+    "dev": "tsup --watch; cp src/api-spec.yml dist/",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test": "jest"

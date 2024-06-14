@@ -6,8 +6,10 @@
  */
 
 // Need to use the React-specific entry point to import `createApi`
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { ListStocks200Response, GetStockPrices200Response } from '@repo/api-client'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import type { GetStockPrices200Response, ListStocks200Response } from '@repo/api-client'
+import { API_BASE_URL } from '@repo/api-client'
+import { makeAxiosBaseQuery } from '../../api/axios-base-query'
 
 interface PaginationQueryParams {
   limit?: number
@@ -19,7 +21,7 @@ interface StockPricesQueryParams extends PaginationQueryParams {
 }
 
 export const stocksApiSlice = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5001/api/v0/stocks' }),
+  baseQuery: makeAxiosBaseQuery({ baseUrl: `${API_BASE_URL}/stocks` }),
   reducerPath: 'stocksApi',
   // Tag types are used for caching and invalidation.
   tagTypes: ['Stock', 'StockPrice'],
@@ -39,8 +41,10 @@ export const stocksApiSlice = createApi({
       forceRefetch: ({ currentArg, previousArg }) => currentArg?.page !== previousArg?.page,
     }),
     listStockPrices: build.query<GetStockPrices200Response, StockPricesQueryParams>({
-      query: ({ stockId, limit = 10, page = 1 }) => `/${stockId}/prices?limit=${limit}&page=${page}`,
-      providesTags: (result, error, { stockId, page }) => [{ type: 'StockPrice', id: `${stockId}_PAGE_${page}` }],
+      query: ({ stockId, limit = 10, page = 1 }) => `${stockId}/prices?limit=${limit}&page=${page}`,
+      providesTags: (result, error, { stockId, page }) => [
+        { type: 'StockPrice', id: `${stockId}_PAGE_${page}` },
+      ],
       // Only have one cache entry so we can add to it over time
       serializeQueryArgs: ({ endpointName, queryArgs }) => {
         return `${endpointName}-${queryArgs.stockId}`

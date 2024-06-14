@@ -1,15 +1,19 @@
+import schema, { apiSpecPath } from '@repo/api-spec'
+import { connectToDatabase } from '@repo/db'
+import { log } from '@repo/logger'
 import { json, urlencoded } from 'body-parser'
-import express, { type Express, static as serveStatic } from 'express'
-import morgan from 'morgan'
-import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import express, { type Express, static as serveStatic } from 'express'
+import * as OpenApiValidator from 'express-openapi-validator'
+import { Redis } from 'ioredis'
+import morgan from 'morgan'
 import serverTiming from 'server-timing'
 import * as swaggerUI from 'swagger-ui-express'
-import schema, { apiSpecPath } from '@repo/api-spec'
-import * as OpenApiValidator from 'express-openapi-validator'
-import { log } from '@repo/logger'
-import { connectToDatabase } from '@repo/db'
-import { Redis } from 'ioredis'
+import { loadApiConfig } from './config'
+import { errorHandler } from './error-handler'
+import { JwtService } from './middlewares/auth-middleware'
+import { paginationMiddleware } from './middlewares/pagination-middleware'
 import {
   addStocksToWatchlistHandler,
   createWatchlistHandler,
@@ -32,11 +36,7 @@ import {
   updateUserHandler,
   updateWatchlistHandler,
 } from './operation-handlers'
-import { errorHandler } from './error-handler'
 import { handleTestingEndpointRequest } from './testing-endpoint'
-import { JwtService } from './middlewares/auth-middleware'
-import { loadApiConfig } from './config'
-import { paginationMiddleware } from './middlewares/pagination-middleware'
 
 export const createServer = async (): Promise<Express> => {
   const apiConfig = loadApiConfig()
@@ -135,6 +135,8 @@ export const createServer = async (): Promise<Express> => {
     app.db = await connectToDatabase()
   } catch (error) {
     log('Error connecting to database:', error)
+    // fail fast
+    throw error
   }
 
   return app

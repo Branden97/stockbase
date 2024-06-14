@@ -1,7 +1,7 @@
+import { log, error as logError } from '@repo/logger'
 import { Sequelize, Options as SequelizeOptions } from '@sequelize/core'
 import { loadDbConfig } from './config'
-import { User, Stock, Watchlist, WatchlistStock, StockPrice } from './models'
-import { log, error as logError } from '@repo/logger'
+import { Stock, StockPrice, User, Watchlist, WatchlistStock } from './models'
 import { seedStockPrices, seedStocks } from './seed-db'
 
 const config = loadDbConfig()
@@ -51,6 +51,8 @@ export async function connectToDatabase(): Promise<Sequelize> {
     log('Connected to database.')
   } catch (error) {
     logError('Unable to connect to the database:', error)
+    // fail fast
+    throw error
   }
   return sequelize
 }

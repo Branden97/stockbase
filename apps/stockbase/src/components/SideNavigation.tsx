@@ -1,25 +1,26 @@
 /* eslint-disable react/function-component-definition -- ugh */
-import React from 'react'
+import AssessmentIcon from '@mui/icons-material/Assessment'
+import HomeIcon from '@mui/icons-material/Home'
+import ListAltIcon from '@mui/icons-material/ListAlt'
+import LogoutIcon from '@mui/icons-material/Logout'
+import SettingsIcon from '@mui/icons-material/Settings'
+import SupportIcon from '@mui/icons-material/Support'
 import {
+  Avatar,
+  Box,
+  Divider,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemText,
-  Divider,
-  IconButton,
-  Avatar,
-  Typography,
   Switch,
   Toolbar,
-  Box,
+  Typography,
 } from '@mui/material'
-import HomeIcon from '@mui/icons-material/Home'
-import AssessmentIcon from '@mui/icons-material/Assessment'
-import ListAltIcon from '@mui/icons-material/ListAlt'
-import SettingsIcon from '@mui/icons-material/Settings'
-import SupportIcon from '@mui/icons-material/Support'
-import LogoutIcon from '@mui/icons-material/Logout'
-import { UiStateProvider, useDrawerState, useUiStateContext } from '@/src/lib/hooks/use-ui-state'
+import NextLink from 'next/link'
+import React from 'react'
+import { useUiStateContext } from '@/src/lib/hooks/use-ui-state'
 
 interface User {
   firstname: string
@@ -60,10 +61,12 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
           <HomeIcon />
           <ListItemText primary="Home" />
         </ListItem>
-        <ListItem button>
-          <AssessmentIcon />
-          <ListItemText primary="Stocks" />
-        </ListItem>
+        <NextLink href="/stocks" passHref>
+          <ListItem button>
+            <AssessmentIcon />
+            <ListItemText primary="Stocks" />
+          </ListItem>
+        </NextLink>
         <ListItem button>
           <ListAltIcon />
           <ListItemText primary="Watchlists" />
@@ -102,33 +105,33 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
   )
   return (
     <Box
+      aria-label="mailbox folders"
       component="nav"
       sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-      aria-label="mailbox folders"
     >
       {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
       <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onTransitionEnd={handleDrawerTransitionEnd}
-        onClose={handleDrawerClose}
         ModalProps={{
           keepMounted: true, // Better open performance on mobile.
         }}
+        onClose={handleDrawerClose}
+        onTransitionEnd={handleDrawerTransitionEnd}
+        open={mobileOpen}
         sx={{
           display: { xs: 'block', sm: 'none' },
           '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
         }}
+        variant="temporary"
       >
         {drawerContents}
       </Drawer>
       <Drawer
-        variant="permanent"
+        open
         sx={{
           display: { xs: 'none', sm: 'block' },
           '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
         }}
-        open
+        variant="permanent"
       >
         {drawerContents}
       </Drawer>

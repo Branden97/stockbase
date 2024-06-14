@@ -1,5 +1,6 @@
 import { log } from '@repo/logger'
-import { CounterButton, Link } from '@repo/ui'
+import { CounterButton } from '@repo/ui'
+import Link from 'next/link' 
 
 export const metadata = {
   title: 'Store | Stockbase',
