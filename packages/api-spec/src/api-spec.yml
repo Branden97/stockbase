@@ -863,6 +863,13 @@ components:
           type: string
         companyName:
           type: string
+        recordedAt:
+          type: string
+          format: date-time
+        latestPrice:
+          type: number
+        percentChange:
+          type: number
 
     StockPrice:
       type: object
@@ -944,3 +951,4 @@ components:
         type: integer
         minimum: 1
         default: 1
+

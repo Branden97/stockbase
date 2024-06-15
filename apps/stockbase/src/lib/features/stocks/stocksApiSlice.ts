@@ -18,38 +18,38 @@ export const stocksApiSlice = createApi({
   // Tag types are used for caching and invalidation.
   tagTypes: ['Stock', 'StockPrice'],
   endpoints: (build) => ({
-    listStocks: build.query<ListStocks200Response, PaginationQueryParams>({
+    listAllStocks: build.query<ListStocks200Response, PaginationQueryParams>({
       query: ({ limit = 10, page = 1 }) => `?limit=${limit}&page=${page}`,
       providesTags: (result, error, { page }) => [{ type: 'Stock', id: `PAGE_${page}` }],
       // Only have one cache entry so we can add to it over time
-      serializeQueryArgs: ({ endpointName }) => {
-        return endpointName
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        return `${endpointName}?limit=${queryArgs.limit}&page=${queryArgs.page}`
       },
       // Always merge incoming data to the cache entry
-      merge: (currentCache, newItems) => {
-        currentCache.stocks?.push(...(newItems.stocks || []))
-      },
+      // merge: (currentCache, newItems) => {
+      //   currentCache.stocks?.push(...(newItems.stocks || []))
+      // },
       // Refetch when the page arg changes
       forceRefetch: ({ currentArg, previousArg }) => currentArg?.page !== previousArg?.page,
 
       // Prefetch stock prices for each stock
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        // Side-effect when the query starts
-        const { data } = await queryFulfilled
-        // Side-effect when the query succeeds
-        if (data.stocks) {
-          data.stocks.forEach((stock) => {
-            // Prefetch the next page of stock prices
-            dispatch(
-              stocksApiSlice.util.prefetch(
-                'listStockPrices',
-                { stockId: `${stock.id}`, limit: 1, page: 1 },
-                { force: true }
-              )
-            )
-          })
-        } 
-      },
+      //   async onQueryStarted(_, { dispatch, queryFulfilled }) {
+      //     // Side-effect when the query starts
+      //     const { data } = await queryFulfilled
+      //     // Side-effect when the query succeeds
+      //     if (data.stocks) {
+      //       data.stocks.forEach((stock) => {
+      //         // Prefetch the next page of stock prices
+      //         dispatch(
+      //           stocksApiSlice.util.prefetch(
+      //             'listStockPrices',
+      //             { stockId: `${stock.id}`, limit: 1, page: 1 },
+      //             { force: true }
+      //           )
+      //         )
+      //       })
+      //     }
+      //   },
     }),
     listStockPrices: build.query<GetStockPrices200Response, StockPricesQueryParams>({
       query: ({ stockId, limit = 10, page = 1 }) => `${stockId}/prices?limit=${limit}&page=${page}`,
@@ -70,4 +70,4 @@ export const stocksApiSlice = createApi({
   }),
 })
 
-export const { useListStocksQuery, useListStockPricesQuery } = stocksApiSlice
+export const { useListAllStocksQuery, useListStockPricesQuery,  } = stocksApiSlice

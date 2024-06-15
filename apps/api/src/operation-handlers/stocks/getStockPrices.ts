@@ -26,6 +26,8 @@ export const getStockPricesHandler: RequestHandler = asyncHandler(
       }
       const prices = await StockPrice.findAndCountAll({
         where: { stockId },
+        // sort by recordedAt in descending order
+        order: [['recordedAt', 'DESC']],
         limit,
         offset,
       })

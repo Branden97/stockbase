@@ -296,6 +296,24 @@ export interface Stock {
    * @memberof Stock
    */
   companyName?: string
+  /**
+   *
+   * @type {number}
+   * @memberof Stock
+   */
+  percentChange?: number
+  /**
+   *
+   * @type {number}
+   * @memberof Stock
+   */
+  latestPrice?: number
+  /**
+   *
+   * @type {string}
+   * @memberof Stock
+   */
+  recordedAt?: string
 }
 /**
  *

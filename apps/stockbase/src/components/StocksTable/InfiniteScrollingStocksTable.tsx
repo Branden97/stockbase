@@ -17,10 +17,8 @@ import type { ReactNode } from 'react'
 import { forwardRef, useState } from 'react'
 import type { TableComponents } from 'react-virtuoso'
 import { TableVirtuoso } from 'react-virtuoso'
-import {
-  useListStockPricesQuery,
-  useListStocksQuery,
-} from '@/src/lib/features/stocks/stocksApiSlice'
+import { formatDistanceToNow } from 'date-fns'
+import { useListAllStocksQuery } from '@/src/lib/features/stocks/stocksApiSlice'
 
 export const ROW_SIZE = 48
 
@@ -122,9 +120,12 @@ function RowContent(_index: number, row: RowData): JSX.Element {
         let cellContents = row[column.dataKey]
         if (column.dataKey === 'buttons')
           cellContents = <AddToWatchlistButton symbol={row.symbol} />
-        if (column.dataKey === 'price') cellContents = <StockPriceCell stockId={`${row.stockId}`} />
         if (column.dataKey === 'recordedAt')
-          cellContents = <StockTimeCell stockId={`${row.stockId}`} />
+          cellContents = formatDistanceToNow(row.recordedAt, {
+            addSuffix: true,
+            includeSeconds: true,
+          })
+        // if (column.dataKey === 'price') cellContents = <StockPriceCell stockId={`${row.stockId}`} />
 
         return (
           <TableCell align={column.floadRight ? 'right' : 'left'} key={column.dataKey}>
@@ -155,51 +156,30 @@ function AddToWatchlistButton({ symbol }: AddToWatchlistButtonProps): JSX.Elemen
   )
 }
 
-interface StockPriceCellProps {
-  stockId: string
-}
-
-function StockPriceCell({ stockId }: StockPriceCellProps): JSX.Element {
-  const { data, isLoading, isError, isFetching, refetch } = useListStockPricesQuery({
-    stockId,
-    limit: 1,
-  })
-
-  return <>{data?.prices?.[0]?.price}</>
-}
-
-interface StockTimeCellProps {
-  stockId: string
-}
-
-function StockTimeCell({ stockId }: StockTimeCellProps): JSX.Element {
-  const { data, isLoading, isError, isFetching, refetch } = useListStockPricesQuery({
-    stockId,
-    limit: 1,
-  })
-
-  return <>{data?.prices?.[0]?.recordedAt}</>
-}
-
-export function StocksTable(): JSX.Element {
+export function InfiniteScrollingStocksTable(): JSX.Element {
   const limit = 20
   const [page, setPage] = useState(1)
-  const { data, isLoading, isError, isFetching, refetch, isSuccess } = useListStocksQuery({
-    limit,
-    page,
-  })
+  const { data, isLoading, isError, isFetching, refetch, isSuccess } = useListAllStocksQuery(
+    {
+      limit,
+      page,
+    },
+    { pollingInterval: 3000 }
+  )
 
   // TODO: calculate the number of extra loading rows based on the table height
   const extraLoadingRowsCount = 20
 
   // Prepare the main rows
-  const rows: RowData[] = (data?.stocks || []).map(({ companyName, symbol, id }) => ({
-    stockId: id || 0,
-    companyName: `${companyName}`,
-    symbol: `${symbol}`,
-    recordedAt: '2021-10-01',
-    price: 100,
-  }))
+  const rows: RowData[] = (data?.stocks || []).map(
+    ({ companyName, symbol, id, recordedAt, latestPrice }) => ({
+      stockId: id || 0,
+      companyName: `${companyName}`,
+      symbol: `${symbol}`,
+      recordedAt: `${recordedAt}`,
+      price: latestPrice || 0,
+    })
+  )
 
   if ((isFetching || isLoading) && !isError) {
     rows.push(

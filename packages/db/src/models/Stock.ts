@@ -35,6 +35,18 @@ export class Stock extends Model<InferAttributes<Stock>, InferCreationAttributes
   @Attribute(DataTypes.STRING(255))
   declare companyName: string
 
+  @Attribute(DataTypes.STRING(255))
+  declare industry: string
+  
+  @Attribute(DataTypes.DECIMAL(20, 10))
+  declare latestPrice: string
+
+  @Attribute(DataTypes.DECIMAL(20, 10))
+  declare percentChange: string
+
+  @Attribute(DataTypes.DATE)
+  declare recordedAt: Date
+
   // has many watchlistStocks
   @HasMany(() => WatchlistStock, { foreignKey: 'stockId', inverse: 'stock' })
   declare watchlistStocks: CreationOptional<WatchlistStock[]>

@@ -52,6 +52,7 @@ export const makeAxiosBaseQuery: MakeAxiosBaseQuery = ({ baseUrl }) => {
         method,
         data,
         params,
+        headers: { cache: 'no-cache' },
       })
       return { data: result.data }
     } catch (err) {

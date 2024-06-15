@@ -4,8 +4,9 @@ import { stocks } from './stocks-data'
 
 export async function seedStocks() {
   try {
-    await Stock.bulkCreate(stocks.map((stock) => ({ symbol: stock.s, companyName: stock.n })))
-    console.log('Stocks have been seeded successfully.')
+    // Doing this in the worker now
+    // await Stock.bulkCreate(stocks.map((stock) => ({ symbol: stock.s, companyName: stock.n })))
+    // console.log('Stocks have been seeded successfully.')
   } catch (error) {
     console.error('Failed to seed stocks:', error)
   }

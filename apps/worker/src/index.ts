@@ -1,14 +1,16 @@
 import { connectToDatabase, Stock, StockPrice } from '@repo/db'
 import yahooFinance from 'yahoo-finance2'
+import { chunk } from 'lodash'
 import Bottleneck from 'bottleneck'
-// import { stocks as stocksData } from '@repo/db/src/seed-db/stocks-data'
+// eslint-disable-next-line import/no-relative-packages -- some issue with the @repo/db import
+import { stocks as stocksData } from '../../../packages/db/src/seed-db/stocks-data'
 
 // Create a limiter to handle rate limits
 const limiter = new Bottleneck({
   minTime: 5000, // minimum time between each request in milliseconds (1000 ms = 1 second)
 })
 
-let stocks: Stock[] = []
+let allStocks: Stock[] = []
 let stockSymbols: string[] = []
 
 /**
@@ -19,19 +21,26 @@ let stockSymbols: string[] = []
 async function fetchAndSaveStockPrices(symbols: string[], phase: string): Promise<void> {
   try {
     console.log(`Fetching ${phase} stock prices...`)
-    const quotes = await yahooFinance.quote(symbols, {
-      fields: getFieldsForPhase(phase),
+    const symbolChunks = chunk(symbols, 500) // Split symbols into chunks of 500
+
+    const fetchPromises = symbolChunks.map(async (chunk) => {
+      const chunkQuotes = await limiter.schedule(() =>
+        yahooFinance.quote(chunk, {
+          fields: getFieldsForPhase(phase),
+        })
+      )
+
+      console.log(`Fetched ${chunkQuotes.length} ${phase} stock prices for chunk:`)
+
+      const stockPrices = (Array.isArray(chunkQuotes) ? chunkQuotes : [chunkQuotes])
+        .map(coerceQuoteToStockPrice)
+        .filter(Boolean) as StockPrice[]
+
+      await StockPrice.bulkCreate(stockPrices, { logging: false })
+      console.log(`Saved ${stockPrices.length} ${phase} stock prices for chunk`)
     })
-    console.log(`Fetched ${quotes.length} ${phase} stock prices:`, 
-      // JSON.stringify(quotes, null, 2)
-    )
 
-    const stockPrices = (Array.isArray(quotes) ? quotes : [quotes])
-      .map(coerceQuoteToStockPrice)
-      .filter(Boolean) as StockPrice[]
-
-    await StockPrice.bulkCreate(stockPrices, { logging: false })
-    console.log(`Saved ${stockPrices.length} ${phase} stock prices`)
+    await Promise.all(fetchPromises)
   } catch (error) {
     handleFetchError(error, symbols)
   }
@@ -80,7 +89,7 @@ async function handleFetchError(error: any, symbols: string[]): Promise<void> {
  * @returns A StockPrice object or null if the stock symbol is not found.
  */
 function coerceQuoteToStockPrice(quote: any): StockPrice | null {
-  const stockId = stocks.find((stock) => stock.symbol === quote.symbol)?.id
+  const stockId = allStocks.find((stock) => stock.symbol === quote.symbol)?.id
   if (!stockId) {
     console.error(`Stock not found for symbol ${quote.symbol}`)
     return null
@@ -97,7 +106,7 @@ function coerceQuoteToStockPrice(quote: any): StockPrice | null {
  * Generates random stock prices and saves them to the database.
  */
 async function generateRandomStockPrices(): Promise<void> {
-  const stockPrices: StockPrice[] = stocks.map((stock) => {
+  const stockPrices: StockPrice[] = allStocks.map((stock) => {
     const randomPrice = Math.random() * 1000 // Generate a random price
     return {
       id: undefined,
@@ -106,9 +115,69 @@ async function generateRandomStockPrices(): Promise<void> {
       recordedAt: new Date(),
     }
   }) as unknown as StockPrice[]
+
   console.log(`Saving ${stockPrices.length} random stock prices...`)
-  await StockPrice.bulkCreate(stockPrices, { logging: false })
+
+  // Chunk the stock prices into smaller batches
+  const chunkedStockPrices = chunk(stockPrices, 500) // Adjust the size as needed
+
+  for (const batch of chunkedStockPrices) {
+    await StockPrice.bulkCreate(batch, { logging: false })
+  }
+
   console.log(`Saved!`)
+}
+
+/**
+ * Generates random stock prices and saves them to the database in chunks.
+ */
+async function generateRandomStockPricesDirect(): Promise<void> {
+  if (allStocks.length === 0) allStocks = await Stock.findAll()
+  const now = new Date()
+
+  // Shuffle the array to randomize the stock IDs
+  for (let i = allStocks.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[allStocks[i], allStocks[j]] = [allStocks[j], allStocks[i]]
+  }
+
+  // Calculate chunk size (a quarter of the total stocks)
+  const chunkSize = Math.ceil(allStocks.length / 10)
+
+  // Function to process a chunk of stocks
+  async function processChunk(chunk: any[]) {
+    const chunkNewPrices = chunk.map((stock) => {
+      const randomPrice = Math.random() * 1000 // Generate a random price
+      const percentChange =
+        ((randomPrice - parseFloat(stock.latestPrice)) / parseFloat(stock.latestPrice)) * 100
+      stock.latestPrice = randomPrice.toFixed(2)
+      stock.percentChange = percentChange.toFixed(2)
+      return {
+        id: stock.id,
+        symbol: stock.symbol,
+        companyName: stock.companyName,
+        industry: stock.industry,
+        latestPrice: stock.latestPrice,
+        percentChange: stock.percentChange,
+        price: randomPrice.toFixed(2),
+        recordedAt: now,
+      }
+    })
+    console.log(`Saving ${chunkNewPrices.length} random stock prices...`)
+    await Stock.bulkCreate(chunkNewPrices, {
+      updateOnDuplicate: ['latestPrice', 'percentChange', 'recordedAt'],
+      logging: false,
+    })
+    console.log(`Saved chunk of ${chunkNewPrices.length} stocks!`)
+  }
+
+  // Process each chunk serially
+  for (let i = 0; i < allStocks.length; i += chunkSize) {
+    const chunk = allStocks.slice(i, i + chunkSize)
+    await processChunk(chunk)
+    // wait a second between
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+  }
 }
 
 /**
@@ -118,17 +187,20 @@ async function runBasedOnMarketTime(): Promise<void> {
   const currentTime = new Date()
   const currentHour = currentTime.getUTCHours()
   const currentDay = currentTime.getUTCDay()
-
-  if (isWeekend(currentDay)) {
-    await generateRandomStockPrices()
-  } else if (isPremarket(currentHour)) {
-    await fetchAndSaveStockPrices(stockSymbols, 'premarket')
-  } else if (isNormalMarket(currentHour)) {
-    await fetchAndSaveStockPrices(stockSymbols, 'normal')
-  } else if (isPostmarket(currentHour)) {
-    await fetchAndSaveStockPrices(stockSymbols, 'postmarket')
-  } else {
-    await generateRandomStockPrices()
+  try {
+    if (isWeekend(currentDay)) {
+      await generateRandomStockPricesDirect()
+    } else if (isPremarket(currentHour)) {
+      await fetchAndSaveStockPrices(stockSymbols, 'premarket')
+    } else if (isNormalMarket(currentHour)) {
+      await fetchAndSaveStockPrices(stockSymbols, 'normal')
+    } else if (isPostmarket(currentHour)) {
+      await fetchAndSaveStockPrices(stockSymbols, 'postmarket')
+    } else {
+      await generateRandomStockPricesDirect()
+    }
+  } catch (error) {
+    console.error(error)
   }
 }
 
@@ -173,8 +245,23 @@ function isPostmarket(hour: number): boolean {
  */
 async function initialize(): Promise<void> {
   const db = await connectToDatabase()
-  stocks = await Stock.findAll()
-  stockSymbols = stocks.map((stock) => stock.symbol) // stocksData.map(({ s }) => s)
+  const stocksCount = await Stock.count()
+  if (stocksCount === 0) {
+    // Fill stocks table with stocksData
+    await Stock.bulkCreate(
+      stocksData.map((s) => ({
+        symbol: s.s,
+        companyName: s.n,
+        industry: `${s.i}`,
+        recordedAt: new Date(),
+        latestPrice: '0',
+        percentChange: '0',
+      })),
+      { logging: false }
+    )
+  }
+  allStocks = await Stock.findAll()
+  stockSymbols = allStocks.map((stock) => stock.symbol)
   // await db.close()
 }
 
