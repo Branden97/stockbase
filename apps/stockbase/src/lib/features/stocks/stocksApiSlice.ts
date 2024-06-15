@@ -1,11 +1,3 @@
-/**
- * stocks operations:
-    - getStock
-    - getStockPrices
-    - listStocks
- */
-
-// Need to use the React-specific entry point to import `createApi`
 import { createApi } from '@reduxjs/toolkit/query/react'
 import type { GetStockPrices200Response, ListStocks200Response } from '@repo/api-client'
 import { API_BASE_URL } from '@repo/api-client'
@@ -39,6 +31,25 @@ export const stocksApiSlice = createApi({
       },
       // Refetch when the page arg changes
       forceRefetch: ({ currentArg, previousArg }) => currentArg?.page !== previousArg?.page,
+
+      // Prefetch stock prices for each stock
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        // Side-effect when the query starts
+        const { data } = await queryFulfilled
+        // Side-effect when the query succeeds
+        if (data.stocks) {
+          data.stocks.forEach((stock) => {
+            // Prefetch the next page of stock prices
+            dispatch(
+              stocksApiSlice.util.prefetch(
+                'listStockPrices',
+                { stockId: `${stock.id}`, limit: 1, page: 1 },
+                { force: true }
+              )
+            )
+          })
+        } 
+      },
     }),
     listStockPrices: build.query<GetStockPrices200Response, StockPricesQueryParams>({
       query: ({ stockId, limit = 10, page = 1 }) => `${stockId}/prices?limit=${limit}&page=${page}`,

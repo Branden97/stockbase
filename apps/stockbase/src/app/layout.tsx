@@ -38,7 +38,8 @@ export function MainContent({ children }: { children: React.ReactNode }): JSX.El
     <ThemeProvider theme={customTheme}>
       <html lang="en">
         <body>
-          <ToastContainer limit={10} stacked theme={isDarkMode ? 'dark' : 'light'} />
+          {/* TODO: add `stacked` as a user setting */}
+          <ToastContainer limit={10} theme={isDarkMode ? 'dark' : 'light'} />
           <CssBaseline />
           {!hideNavigation && (
             <>

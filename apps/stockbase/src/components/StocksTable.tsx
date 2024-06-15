@@ -4,6 +4,7 @@ import ListAltIcon from '@mui/icons-material/ListAlt'
 import {
   IconButton,
   Paper,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -23,7 +24,7 @@ import {
 
 export const ROW_SIZE = 48
 
-interface Data {
+interface RowData {
   stockId: number
   companyName: string
   symbol: string
@@ -34,51 +35,43 @@ interface Data {
 }
 
 interface ColumnData {
-  dataKey: keyof Data
+  dataKey: keyof RowData
   label: string
-  numeric?: boolean
+  floadRight?: boolean
   width: number
 }
 
 const columns: ColumnData[] = [
   {
-    width: 50,
+    width: 120,
     label: 'Company',
     dataKey: 'companyName',
   },
   {
-    width: 120,
+    width: 60,
     label: 'Ticker',
     dataKey: 'symbol',
   },
   {
-    width: 120,
+    width: 60,
     label: 'Date/Time',
     dataKey: 'recordedAt',
   },
   {
-    width: 120,
+    width: 40,
     label: 'Price\u00A0($)',
     dataKey: 'price',
-    numeric: true,
+    floadRight: true,
   },
   {
     width: 40,
-    label: 'Buttons',
+    label: '',
     dataKey: 'buttons',
+    floadRight: true,
   },
 ]
 
-const LoadingRow = rowContent(9999, {
-  stockId: 0,
-  companyName: `asdf`,
-  symbol: `asdf`,
-  recordedAt: '2021-10-01',
-  price: 100,
-  isLoading: true,
-})
-
-const VirtuosoTableComponents: TableComponents<Data> = {
+const VirtuosoTableComponents: TableComponents<RowData> = {
   Scroller: forwardRef<HTMLDivElement>((props, ref) => (
     <TableContainer component={Paper} {...props} ref={ref} />
   )),
@@ -96,7 +89,7 @@ function fixedHeaderContent(): JSX.Element {
     <TableRow>
       {columns.map((column) => (
         <TableCell
-          align={column.numeric || false ? 'right' : 'left'}
+          align={column.floadRight || false ? 'right' : 'left'}
           key={column.dataKey}
           style={{ width: column.width }}
           sx={{
@@ -111,7 +104,18 @@ function fixedHeaderContent(): JSX.Element {
   )
 }
 
-function rowContent(_index: number, row: Data): JSX.Element {
+function RowContent(_index: number, row: RowData): JSX.Element {
+  if (row.isLoading) {
+    return (
+      <>
+        {columns.map((column) => (
+          <TableCell key={column.dataKey} style={{ width: column.width }}>
+            <Skeleton />
+          </TableCell>
+        ))}
+      </>
+    )
+  }
   return (
     <>
       {columns.map((column) => {
@@ -123,7 +127,7 @@ function rowContent(_index: number, row: Data): JSX.Element {
           cellContents = <StockTimeCell stockId={`${row.stockId}`} />
 
         return (
-          <TableCell align={column.numeric ? 'right' : 'left'} key={column.dataKey}>
+          <TableCell align={column.floadRight ? 'right' : 'left'} key={column.dataKey}>
             {cellContents}
           </TableCell>
         )
@@ -178,15 +182,37 @@ function StockTimeCell({ stockId }: StockTimeCellProps): JSX.Element {
 }
 
 export function StocksTable(): JSX.Element {
+  const limit = 20
   const [page, setPage] = useState(1)
-  const { data, isLoading, isError, isFetching, refetch } = useListStocksQuery({ limit: 20, page })
-  const rows: Data[] = (data?.stocks || []).map(({ companyName, symbol, id }) => ({
+  const { data, isLoading, isError, isFetching, refetch, isSuccess } = useListStocksQuery({
+    limit,
+    page,
+  })
+
+  // TODO: calculate the number of extra loading rows based on the table height
+  const extraLoadingRowsCount = 20
+
+  // Prepare the main rows
+  const rows: RowData[] = (data?.stocks || []).map(({ companyName, symbol, id }) => ({
     stockId: id || 0,
     companyName: `${companyName}`,
     symbol: `${symbol}`,
     recordedAt: '2021-10-01',
     price: 100,
   }))
+
+  if ((isFetching || isLoading) && !isError) {
+    rows.push(
+      ...[...Array(extraLoadingRowsCount)].map((_, index) => ({
+        stockId: 0,
+        companyName: 'Loading...',
+        symbol: 'Loading...',
+        recordedAt: 'Loading...',
+        price: 0,
+        isLoading: true,
+      }))
+    )
+  }
 
   function handleBottomStateChange(isAtBottom: boolean): void {
     const totalPages = data?.paginationMeta?.totalPages
@@ -202,7 +228,7 @@ export function StocksTable(): JSX.Element {
         components={VirtuosoTableComponents}
         data={rows}
         fixedHeaderContent={fixedHeaderContent}
-        itemContent={rowContent}
+        itemContent={RowContent}
       />
     </Paper>
   )
