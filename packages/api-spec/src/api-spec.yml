@@ -349,7 +349,7 @@ paths:
                 allOf:
                   - $ref: '#/components/schemas/PaginationResponseFields'
                   - properties:
-                      stocks:
+                      prices:
                         type: array
                         items:
                           $ref: '#/components/schemas/StockPrice'
@@ -863,6 +863,13 @@ components:
           type: string
         companyName:
           type: string
+        recordedAt:
+          type: string
+          format: date-time
+        latestPrice:
+          type: number
+        percentChange:
+          type: number
 
     StockPrice:
       type: object
@@ -944,3 +951,4 @@ components:
         type: integer
         minimum: 1
         default: 1
+

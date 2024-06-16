@@ -1,5 +1,6 @@
 import { log } from '@repo/logger'
-import { CounterButton, Link } from '@repo/ui'
+import { CounterButton } from '@repo/ui'
+import Link from 'next/link' 
 
 export const metadata = {
   title: 'Store | Stockbase',
@@ -16,14 +17,7 @@ export default function Store(): JSX.Element {
       </h1>
       <CounterButton />
       <p className="description">
-        Built With{' '}
-        <Link href="https://turbo.build/repo" newTab>
-          Turborepo
-        </Link>
-        {' & '}
-        <Link href="https://nextjs.org/" newTab>
-          Next.js
-        </Link>
+        <Link href="login">Login</Link>
       </p>
     </div>
   )

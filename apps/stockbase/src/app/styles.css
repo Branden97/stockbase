@@ -18,10 +18,11 @@ html {
 }
 
 body {
-  margin: 0;
+  display: flex;
+  height: 100vh
 }
 
-.container {
+/* .container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -60,4 +61,4 @@ body {
 
 .description a:hover {
   text-decoration: underline;
-}
+} */

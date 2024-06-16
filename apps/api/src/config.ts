@@ -31,6 +31,8 @@ const configSchema = yup.object().shape({
   // Pagination
   PAGINATION_LIMIT: yup.number().default(10).required(),
   PAGINATION_LIMIT_MAX: yup.number().default(100).required(),
+
+  CORS_ORIGIN: yup.string().default('http://localhost:3002').required(),
 })
 
 // Define a type for the configuration based on the schema

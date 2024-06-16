@@ -18,14 +18,17 @@
     "preset": "@repo/jest-presets/node"
   },
   "devDependencies": {
+    "@repo/api-spec": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/jest-presets": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@repo/api-spec": "workspace:*",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.24",
     "jest": "^29.7.0",
     "tsup": "^8.0.2",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "axios": "^1.7.2"
   }
 }

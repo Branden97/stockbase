@@ -9,7 +9,7 @@ import { JwtService } from '../../middlewares/auth-middleware'
 import { loadApiConfig } from '../../config'
 
 interface LoginRequest {
-  username: string
+  email: string
   password: string
 }
 
@@ -17,17 +17,17 @@ const apiConfig = loadApiConfig()
 
 export const loginHandler: RequestHandler = asyncHandler(
   async (req: Request<unknown, unknown, LoginRequest>, res) => {
-    const { username, password } = req.body
+    const { email, password } = req.body
 
     // Find the user by username
     const user = await User.findOne({
       where: {
-        username,
+        email,
       },
     })
 
     if (!user) {
-      res.status(401).json({ message: 'Username or password is incorrect' })
+      res.status(401).json({ message: 'Email or password is incorrect' })
       return
     }
 
@@ -35,7 +35,7 @@ export const loginHandler: RequestHandler = asyncHandler(
     const isPasswordCorrect = await user.checkPassword(password)
 
     if (!isPasswordCorrect) {
-      res.status(401).json({ message: 'Username or password is incorrect' })
+      res.status(401).json({ message: 'Email or password is incorrect' })
       return
     }
 

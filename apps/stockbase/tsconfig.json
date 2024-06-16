@@ -2,12 +2,14 @@
   "exclude": ["node_modules"],
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
+    "paths": {"@/*": ["./*"]},
     "outDir": "dist",
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "strictNullChecks": true
   },
   "include": ["src", "next.config.js", "next-env.d.ts", ".next/types/**/*.ts"]
 }

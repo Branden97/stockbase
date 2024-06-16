@@ -14,15 +14,27 @@
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.19",
     "@mui/material-nextjs": "^5.15.11",
+    "@redux-devtools/extension": "^3.3.0",
+    "@reduxjs/toolkit": "^2.2.5",
     "@repo/api-client": "workspace:*",
     "@repo/api-spec": "workspace:*",
     "@repo/logger": "workspace:*",
     "@repo/ui": "workspace:*",
+    "axios": "^1.7.2",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "memoize-one": "^6.0.0",
     "next": "^14.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-redux": "^9.1.2",
+    "react-toastify": "^10.0.5",
+    "react-virtualized-auto-sizer": "^1.0.24",
+    "react-virtuoso": "^4.7.11",
+    "react-window": "^1.8.10"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.1.1",
@@ -31,6 +43,7 @@
     "@types/node": "^20.11.24",
     "@types/react": "^18.2.62",
     "@types/react-dom": "^18.2.19",
+    "@types/react-window": "^1.8.8",
     "typescript": "^5.3.3"
   }
 }
