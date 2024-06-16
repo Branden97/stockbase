@@ -254,8 +254,8 @@ async function initialize(): Promise<void> {
         companyName: s.n,
         industry: `${s.i}`,
         recordedAt: new Date(),
-        latestPrice: '0',
-        percentChange: '0',
+        latestPrice: `${(Math.random() * 1000).toFixed(2)}`,
+        percentChange: `${(Math.random() * 1000).toFixed(2)}`,
       })),
       { logging: false }
     )

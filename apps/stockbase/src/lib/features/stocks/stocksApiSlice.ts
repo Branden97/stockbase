@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import type { GetStockPrices200Response, ListStocks200Response } from '@repo/api-client'
-import { API_BASE_URL } from '@repo/api-client'
+import { NEXT_PUBLIC_API_BASE_URL } from '@repo/api-client'
 import { makeAxiosBaseQuery } from '../../api/axios-base-query'
 
 interface PaginationQueryParams {
@@ -13,7 +13,7 @@ interface StockPricesQueryParams extends PaginationQueryParams {
 }
 
 export const stocksApiSlice = createApi({
-  baseQuery: makeAxiosBaseQuery({ baseUrl: `${API_BASE_URL}/stocks` }),
+  baseQuery: makeAxiosBaseQuery({ baseUrl: `${NEXT_PUBLIC_API_BASE_URL}/stocks` }),
   reducerPath: 'stocksApi',
   // Tag types are used for caching and invalidation.
   tagTypes: ['Stock', 'StockPrice'],
@@ -70,4 +70,4 @@ export const stocksApiSlice = createApi({
   }),
 })
 
-export const { useListAllStocksQuery, useListStockPricesQuery,  } = stocksApiSlice
+export const { useListAllStocksQuery, useListStockPricesQuery } = stocksApiSlice

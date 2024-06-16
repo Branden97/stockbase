@@ -3,7 +3,25 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { AuthApi, Configuration, StocksApi, UsersApi, WatchlistsApi } from './generated'
 
 export const axiosInstance = axios.create()
-export const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5001/api/v0'
+export const NEXT_PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NODE_ENV === 'production' ? '/api/v0' : 'http://localhost:5001/api/v0'
+
+
+
+// TODO: debug why the env var isn't coming through in docker...
+// console.log(`====================================================================================================`)
+// console.log(`====================================================================================================`)
+// console.log(`====================================================================================================`)
+// console.log(`====`)
+// console.log(`====`)
+// console.log(`====`)
+// console.log(`====    NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}`)
+// console.log(`====`)
+// console.log(`====`)
+// console.log(`====`)
+// console.log(`====================================================================================================`)
+// console.log(`====================================================================================================`)
+// console.log(`====================================================================================================`)
+
 
 export class ApiClient {
   private _configuration: Configuration
@@ -14,13 +32,13 @@ export class ApiClient {
 
   constructor() {
     this._configuration = new Configuration({
-      basePath: API_BASE_URL,
+      basePath: NEXT_PUBLIC_API_BASE_URL,
       baseOptions: { withCredentials: true } as AxiosRequestConfig,
     })
-    this._authApi = new AuthApi(this._configuration, API_BASE_URL, axiosInstance)
-    this._usersApi = new UsersApi(this._configuration, API_BASE_URL, axiosInstance)
-    this._stocksApi = new StocksApi(this._configuration, API_BASE_URL, axiosInstance)
-    this._watchlistsApi = new WatchlistsApi(this._configuration, API_BASE_URL, axiosInstance)
+    this._authApi = new AuthApi(this._configuration, NEXT_PUBLIC_API_BASE_URL, axiosInstance)
+    this._usersApi = new UsersApi(this._configuration, NEXT_PUBLIC_API_BASE_URL, axiosInstance)
+    this._stocksApi = new StocksApi(this._configuration, NEXT_PUBLIC_API_BASE_URL, axiosInstance)
+    this._watchlistsApi = new WatchlistsApi(this._configuration, NEXT_PUBLIC_API_BASE_URL, axiosInstance)
   }
 
   get authApi() {

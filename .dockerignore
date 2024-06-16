@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+.pnpm
+**/.pnpm
+.pnpm-store
+**/.pnpm-store
+.next
+**/.next
+**/*.log
+**/dist
+.git
+
+*.md
