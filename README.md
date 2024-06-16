@@ -129,12 +129,10 @@ Before you start the development process, make sure you have the following insta
 
 ### Accessing the Application
 Once the development server is running, you can access the application by opening your browser and navigating to [http://localhost:3002](http://localhost:3002).
- 
+</details>
+
 > [!NOTE]
 > If you're getting a `Cannot find module '@repo/ui'` (or similar) error in vscode, run `pnpm run dev`. It will generate the `dist/**/*.d.ts` type files, which fixed the issue for me. [[more info]](https://github.com/vercel/turbo/issues/4771)
-
-  
-</details>
 
 ## Honorable Mentions:
 
