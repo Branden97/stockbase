@@ -150,8 +150,10 @@ async function generateRandomStockPricesDirect(): Promise<void> {
       const randomPrice = Math.random() * 1000 // Generate a random price
       const percentChange =
         ((randomPrice - parseFloat(stock.latestPrice)) / parseFloat(stock.latestPrice)) * 100
-      stock.latestPrice = randomPrice.toFixed(2)
-      stock.percentChange = percentChange.toFixed(2)
+      stock.latestPrice =
+        isFinite(randomPrice) && !isNaN(randomPrice) ? randomPrice.toFixed(2) : '1'
+      stock.percentChange =
+        isFinite(percentChange) && !isNaN(percentChange) ? percentChange.toFixed(2) : '1'
       return {
         id: stock.id,
         symbol: stock.symbol,
@@ -270,8 +272,9 @@ async function initialize(): Promise<void> {
  */
 async function main(): Promise<void> {
   await initialize()
-  await runBasedOnMarketTime()
-  setInterval(runBasedOnMarketTime, 3000)
+  // await runBasedOnMarketTime()
+  await generateRandomStockPricesDirect()
+  setInterval(generateRandomStockPricesDirect, 3000)
 }
 
 main().catch((error) => {
